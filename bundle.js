@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-let Neat = ({
+let Neat$1 = ({
   color,
   columns,
   direction,
@@ -162,7 +162,7 @@ let gridVisual = theme => {
   };
 };
 
-exports.Neat = Neat;
+exports['default'] = Neat$1;
 exports.gridCollapse = gridCollapse;
 exports.gridColumn = gridColumn;
 exports.gridContainer = gridContainer;

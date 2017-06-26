@@ -6,8 +6,9 @@ import gridPush from './Mixins/gridPush'
 import gridShift from './Mixins/gridShift'
 import gridVisual from './Mixins/gridVisual'
 
+export default Neat
+
 export {
-  Neat,
   gridCollapse,
   gridColumn,
   gridContainer,
