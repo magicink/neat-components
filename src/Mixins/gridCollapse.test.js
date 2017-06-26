@@ -10,3 +10,17 @@ test('passing in the default grid', () => {
     width: 'calc(100% + 40px)'
   })
 })
+
+test('not passing in a direction', () => {
+  let grid = new Neat()
+  grid.theme.direction = undefined
+  let result = gridCollapse(grid)
+  expect(result).toBe(false)
+})
+
+test('passing in a % unit', () => {
+  let grid = new Neat()
+  grid.theme.gutter = '5%'
+  let result = gridCollapse(grid)
+  expect(result).toBe(false)
+})
