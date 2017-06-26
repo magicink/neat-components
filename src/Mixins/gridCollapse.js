@@ -9,11 +9,11 @@ let gridCollapse = (grid) => {
   let gutterUnit = parseUnit(gutter)
   if (gutterUnit === '%') return false
   let gutterValue = stripUnit(gutter)
-  let nestedGrid = {}
-  nestedGrid[`margin-${floatDirection(direction)}`] = `-${gutter}`
-  nestedGrid[`margin-${floatOppositeDirection(direction)}`] = `-${gutter}`
-  nestedGrid['width'] = `calc(100% + ${gutterValue * 2}${gutterUnit})`
-  return nestedGrid
+  let column = {}
+  column[`margin-${floatDirection(direction)}`] = `-${gutter}`
+  column[`margin-${floatOppositeDirection(direction)}`] = `-${gutter}`
+  column['width'] = `calc(100% + ${gutterValue * 2}${gutterUnit})`
+  return column
 }
 
 export default gridCollapse

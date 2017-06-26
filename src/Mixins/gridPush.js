@@ -12,7 +12,7 @@ let gridPush = (push = 0, grid) => {
     let affordance = `${gutterValue * 2}${gutterUnit}`
     column[`margin-${floatDirection(direction)}`] = `
       calc(${columnWidth({grid, span: push})} + ${affordance})
-    `.replace(/\s+/, ' ').trim()
+    `.replace(/\s+/g, ' ').trim()
   } else {
     column[`margin-${floatDirection(direction)}`] = gutter
   }
