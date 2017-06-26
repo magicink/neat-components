@@ -1,7 +1,7 @@
 import columnWidth from '../Functions/columnWidth'
 import floatDirection from '../Functions/floatDirection'
 import parseUnit from '../Functions/parseUnit'
-import { stripUnit } from 'polished'
+import stripUnit from '../Functions/stripUnit'
 
 let gridPush = (push = 0, grid) => {
   const { theme: { direction, gutter } } = grid

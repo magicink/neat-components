@@ -1,7 +1,7 @@
 import floatDirection from '../Functions/floatDirection'
 import floatOppositeDirection from '../Functions/floatOppositeDirection'
 import parseUnit from '../Functions/parseUnit'
-import { stripUnit } from 'polished'
+import stripUnit from '../Functions/stripUnit'
 
 let gridCollapse = (grid) => {
   const { theme: { direction, gutter } } = grid

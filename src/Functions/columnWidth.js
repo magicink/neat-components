@@ -1,5 +1,5 @@
-import { stripUnit } from 'polished'
 import parseUnit from './parseUnit'
+import stripUnit from './stripUnit'
 
 let columnWidth = ({
   grid,
