@@ -5,6 +5,8 @@ import gridContainer from './Mixins/gridContainer'
 
 export {
   Neat,
+  gridCollapse,
   gridColumn,
-  gridContainer
+  gridContainer,
+  gridPush
 }

@@ -9,11 +9,11 @@ let gridCollapse = (grid) => {
   let gutterUnit = parseUnit(gutter)
   if (gutterUnit === '%') return false
   let gutterValue = stripUnit(gutter)
-  let column = {}
-  column[`margin-${floatDirection(direction)}`] = `-${gutter}`
-  column[`margin-${floatOppositeDirection(direction)}`] = `-${gutter}`
-  column['width'] = `calc(100% + ${gutterValue * 2}${gutterUnit})`
-  return column
+  return {
+    [`margin-${floatDirection(direction)}`]: `-${gutter}`,
+    [`margin-${floatOppositeDirection(direction)}`]: `-${gutter}`,
+    width: `calc(100% + ${gutterValue * 2}${gutterUnit})`
+  }
 }
 
 export default gridCollapse

@@ -12,11 +12,11 @@ let gridColumn = ({
   if (isNaN(span)) return false
   span = Math.floor(span)
   if (span > columns) span = columns
-  let column = {}
-  column['width'] = `calc(${columnWidth({grid, span})})`
-  column['float'] = `${floatDirection(direction)}`
-  column[`margin-${floatDirection(direction)}`] = gutter
-  return column
+  return {
+    width: `calc(${columnWidth({grid, span})})`,
+    float: `${floatDirection(direction)}`,
+    [`margin-${floatDirection(direction)}`]: gutter
+  }
 }
 
 export default gridColumn
