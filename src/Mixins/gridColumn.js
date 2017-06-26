@@ -9,6 +9,7 @@ let gridColumn = ({
 }) => {
   const { columns, direction, gutter } = theme
   if (!columns || !direction || gutter === undefined) return false
+  console.log(isNaN(span))
   if (isNaN(span)) return false
   span = Math.floor(span)
   if (span > columns) span = columns

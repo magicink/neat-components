@@ -4,8 +4,8 @@
   "main": "bundle.js",
   "license": "MIT",
   "scripts": {
-    "build": "cross-env NODE_ENV=prod&& rollup -c",
-    "test": "cross-env NODE_ENV=test&& jest"
+    "build": "cross-env NODE_ENV=prod rollup -c",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "devDependencies": {
     "@types/jest": "^20.0.2",
