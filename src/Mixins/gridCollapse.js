@@ -3,8 +3,8 @@ import floatOppositeDirection from '../Functions/floatOppositeDirection'
 import parseUnit from '../Functions/parseUnit'
 import stripUnit from '../Functions/stripUnit'
 
-let gridCollapse = (grid) => {
-  const { theme: { direction, gutter } } = grid
+let gridCollapse = (theme) => {
+  const { direction, gutter } = theme
   if (!direction || !gutter) return false
   let gutterUnit = parseUnit(gutter)
   if (gutterUnit === '%') return false

@@ -1,6 +1,17 @@
 {
-  "presets": [
-    "es2015-rollup",
-    "stage-2"
-  ]
+  "env": {
+    "test": {
+      "presets": [
+        "es2015",
+        "stage-2"
+      ]
+    },
+    "prod": {
+      "presets": [
+        ["es2015", {"modules": false}],
+        "stage-2"
+      ],
+      "plugins": ["external-helpers"]
+    }
+  }
 }

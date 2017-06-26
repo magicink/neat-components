@@ -2,10 +2,10 @@ import parseUnit from './parseUnit'
 import stripUnit from './stripUnit'
 
 let columnWidth = ({
-  grid,
+  theme,
   span
 } = {}) => {
-  const { theme: { columns, gutter } } = grid
+  const { columns, gutter } = theme
   if (!columns || gutter === undefined) return false
   let ratio = span / columns
   let gutterValue = stripUnit(gutter)

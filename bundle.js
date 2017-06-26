@@ -2,40 +2,33 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var Neat = function Neat() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    color: null,
-    columns: 12,
-    direction: 'ltr',
-    gutter: '20px',
-    media: null
-  },
-      color = _ref.color,
-      columns = _ref.columns,
-      direction = _ref.direction,
-      gutter = _ref.gutter,
-      media = _ref.media;
+let Neat = ({
+  color,
+  columns,
+  direction,
+  gutter,
+  media
+} = {
+  color: null,
+  columns: 12,
+  direction: 'ltr',
+  gutter: '20px',
+  media: null
+}) => ({
+  theme: {
+    color,
+    columns,
+    direction,
+    gutter,
+    media
+  }
+});
 
-  return {
-    theme: {
-      color: color,
-      columns: columns,
-      direction: direction,
-      gutter: gutter,
-      media: media
-    }
-  };
-};
-
-var floatDirection = function floatDirection() {
-  var direction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ltr';
-
+let floatDirection = (direction = 'ltr') => {
   return direction === 'rtl' ? 'right' : 'left';
 };
 
-var floatOppositeDirection = function floatOppositeDirection() {
-  var direction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ltr';
-
+let floatOppositeDirection = (direction = 'ltr') => {
   if (direction === 'ltr') {
     return 'right';
   }
@@ -44,147 +37,128 @@ var floatOppositeDirection = function floatOppositeDirection() {
   }
 };
 
-var parseUnit = function parseUnit(value) {
-  var parsedValue = parseFloat(value);
+let parseUnit = value => {
+  let parsedValue = parseFloat(value);
   if (parsedValue) {
-    var splitValue = value.split(parsedValue);
+    let splitValue = value.split(parsedValue);
     return splitValue[splitValue.length - 1].trim();
   } else {
     return '';
   }
 };
 
-var stripUnit = function stripUnit(value) {
-  var unitlessValue = parseFloat(value);
+let stripUnit = value => {
+  const unitlessValue = parseFloat(value);
   if (isNaN(unitlessValue)) return value;
   return unitlessValue;
 };
 
-var defineProperty = function (obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-};
-
-var gridCollapse = function gridCollapse(grid) {
-  var _ref;
-
-  var _grid$theme = grid.theme,
-      direction = _grid$theme.direction,
-      gutter = _grid$theme.gutter;
-
+let gridCollapse = theme => {
+  const { direction, gutter } = theme;
   if (!direction || !gutter) return false;
-  var gutterUnit = parseUnit(gutter);
+  let gutterUnit = parseUnit(gutter);
   if (gutterUnit === '%') return false;
-  var gutterValue = stripUnit(gutter);
-  return _ref = {}, defineProperty(_ref, 'margin-' + floatDirection(direction), '-' + gutter), defineProperty(_ref, 'margin-' + floatOppositeDirection(direction), '-' + gutter), defineProperty(_ref, 'width', 'calc(100% + ' + gutterValue * 2 + gutterUnit + ')'), _ref;
+  let gutterValue = stripUnit(gutter);
+  return {
+    [`margin-${floatDirection(direction)}`]: `-${gutter}`,
+    [`margin-${floatOppositeDirection(direction)}`]: `-${gutter}`,
+    width: `calc(100% + ${gutterValue * 2}${gutterUnit})`
+  };
 };
 
-var columnWidth = function columnWidth() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      grid = _ref.grid,
-      span = _ref.span;
-
-  var _grid$theme = grid.theme,
-      columns = _grid$theme.columns,
-      gutter = _grid$theme.gutter;
-
+let columnWidth = ({
+  theme,
+  span
+} = {}) => {
+  const { columns, gutter } = theme;
   if (!columns || gutter === undefined) return false;
-  var ratio = span / columns;
-  var gutterValue = stripUnit(gutter);
-  var gutterUnit = parseUnit(gutter);
+  let ratio = span / columns;
+  let gutterValue = stripUnit(gutter);
+  let gutterUnit = parseUnit(gutter);
   if (gutterValue === 0) {
-    return ratio * 100 + '%';
+    return `${ratio * 100}%`;
   } else {
-    var affordance = '' + (gutterValue + gutterValue * ratio) + gutterUnit;
-    return ratio * 100 + '% - ' + affordance;
+    let affordance = `${gutterValue + gutterValue * ratio}${gutterUnit}`;
+    return `${ratio * 100}% - ${affordance}`;
   }
 };
 
-var gridColumn = function gridColumn() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    span: 1
-  },
-      span = _ref.span,
-      grid = _ref.grid;
-
-  var _grid$theme = grid.theme,
-      columns = _grid$theme.columns,
-      direction = _grid$theme.direction,
-      gutter = _grid$theme.gutter;
-
+let gridColumn = ({
+  span,
+  theme
+} = {
+  span: 1
+}) => {
+  const { columns, direction, gutter } = theme;
   if (!columns || !direction || gutter === undefined) return false;
   if (isNaN(span)) return false;
   span = Math.floor(span);
   if (span > columns) span = columns;
-  return defineProperty({
-    width: 'calc(' + columnWidth({ grid: grid, span: span }) + ')',
-    float: '' + floatDirection(direction)
-  }, 'margin-' + floatDirection(direction), gutter);
+  return {
+    width: `calc(${columnWidth({ theme, span })})`,
+    float: `${floatDirection(direction)}`,
+    [`margin-${floatDirection(direction)}`]: gutter
+  };
 };
 
-var gridContainer = function gridContainer() {
-  var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '&';
-
-  var psuedoSelector = parent + '::after';
-  return defineProperty({}, psuedoSelector, {
-    clear: 'both',
-    content: '',
-    display: 'block'
-  });
+let gridContainer = (parent = '&') => {
+  const psuedoSelector = `${parent}::after`;
+  return {
+    [psuedoSelector]: {
+      clear: 'both',
+      content: '',
+      display: 'block'
+    }
+  };
 };
 
-var gridPush = function gridPush() {
-  var push = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-  var grid = arguments[1];
-  var _grid$theme = grid.theme,
-      direction = _grid$theme.direction,
-      gutter = _grid$theme.gutter;
-
+let gridPush = (push = 0, theme) => {
+  const { direction, gutter } = theme;
   if (push > 0) {
-    var gutterValue = stripUnit(gutter);
-    var gutterUnit = parseUnit(gutter);
-    var affordance = '' + gutterValue * 2 + gutterUnit;
-    return defineProperty({}, 'margin-' + floatDirection(direction), ('\n        calc(' + columnWidth({ grid: grid, span: push }) + ' + ' + affordance + ')\n      ').replace(/\s+/g, ' ').trim());
+    let gutterValue = stripUnit(gutter);
+    let gutterUnit = parseUnit(gutter);
+    let affordance = `${gutterValue * 2}${gutterUnit}`;
+    return {
+      [`margin-${floatDirection(direction)}`]: `
+        calc(${columnWidth({ theme, span: push })} + ${affordance})
+      `.replace(/\s+/g, ' ').trim()
+    };
   } else {
-    return defineProperty({}, 'margin-' + floatDirection(direction), gutter);
+    return {
+      [`margin-${floatDirection(direction)}`]: gutter
+    };
   }
 };
 
-var gridShift = function gridShift() {
-  var shift = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-  var grid = arguments[1];
-  var _grid$theme = grid.theme,
-      direction = _grid$theme.direction,
-      gutter = _grid$theme.gutter;
-
+let gridShift = (shift = 0, theme) => {
+  const { direction, gutter } = theme;
   if (!direction || gutter === undefined) return false;
   if (shift > 0) {
-    var width = columnWidth({ grid: grid, span: shift });
-    return defineProperty({}, '' + floatDirection(direction), ('\n        calc(' + width + ' + ' + gutter + ')\n      ').replace(/\s+/g, ' ').trim());
+    let width = columnWidth({ theme, span: shift });
+    return {
+      [`${floatDirection(direction)}`]: `
+        calc(${width} + ${gutter})
+      `.replace(/\s+/g, ' ').trim()
+    };
   } else {
-    return defineProperty({}, '' + floatDirection(direction), gutter);
+    return {
+      [`${floatDirection(direction)}`]: gutter
+    };
   }
 };
 
-var gridVisual = function gridVisual(grid) {
-  var _grid$theme = grid.theme,
-      color = _grid$theme.color,
-      gutter = _grid$theme.gutter;
-
+let gridVisual = theme => {
+  let { color, gutter } = theme;
   if (!gutter) return false;
   color = color || '';
   return {
-    'background-image': ('\n      repeating-linear-gradient(\n        to right, transparent, transparent,\n        ' + color + ' ' + gutter + ',\n        ' + color + ' calc(' + columnWidth({ grid: grid, span: 1 }) + ' + ' + gutter + ')\n      )\n    ').replace(/\s+/g, ' ').trim()
+    'background-image': `
+      repeating-linear-gradient(
+        to right, transparent, transparent,
+        ${color} ${gutter},
+        ${color} calc(${columnWidth({ theme, span: 1 })} + ${gutter})
+      )
+    `.replace(/\s+/g, ' ').trim()
   };
 };
 
