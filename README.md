@@ -45,19 +45,9 @@ class App extends Component {
             <Column />
             <Column />
             <Column />
-            <Column />
-            <Column />
-            <Column />
-            <Column />
-            <Column />
-            <Column />
-            <Column />
-            <Column />
           </Cellblock>
           <Cellblock>
             <Column />
-            <Shifted />
-            <Shifted />
             <Shifted />
           </Cellblock>
         </div>
