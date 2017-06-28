@@ -9,7 +9,8 @@
     "prod": {
       "presets": [
         ["es2015", {"modules": false}],
-        "stage-2"
+        "stage-2",
+        "react"
       ],
       "plugins": ["external-helpers"]
     }
