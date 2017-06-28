@@ -1,9 +1,11 @@
-import columnWidth from '../Functions/columnWidth'
-import floatDirection from '../Functions/floatDirection'
-import parseUnit from '../Functions/parseUnit'
-import stripUnit from '../Functions/stripUnit'
+import {
+  columnWidth,
+  floatDirection,
+  parseUnit,
+  stripUnit
+} from '../Functions'
 
-let gridPush = (push = 0, theme) => {
+let gridPush = (theme, push = 0) => {
   const { direction, gutter } = theme
   if (push > 0) {
     let gutterValue = stripUnit(gutter)
@@ -11,7 +13,7 @@ let gridPush = (push = 0, theme) => {
     let affordance = `${gutterValue * 2}${gutterUnit}`
     return {
       [`margin-${floatDirection(direction)}`]: `
-        calc(${columnWidth({theme, span: push})} + ${affordance})
+        calc(${columnWidth(theme, push)} + ${affordance})
       `.replace(/\s+/g, ' ').trim()
     }
   } else {

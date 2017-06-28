@@ -1,21 +1,21 @@
 import floatDirection from './floatDirection'
 
-test('passing in nothing', () => {
+test('should handle no data', () => {
   let result = floatDirection()
   expect(result).toBe('left')
 })
 
-test('passing in ltr', () => {
+test('should handle ltr', () => {
   let result = floatDirection('ltr')
   expect(result).toBe('left')
 })
 
-test('passing in rtl', () => {
+test('should handle rtl', () => {
   let result = floatDirection('rtl')
   expect(result).toBe('right')
 })
 
-test('passing in anything', () => {
+test('should handle unexpected data', () => {
   let result = floatDirection('test')
   expect(result).toBe('left')
 })

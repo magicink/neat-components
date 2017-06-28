@@ -1,15 +1,16 @@
-import columnWidth from '../Functions/columnWidth'
-import floatDirection from '../Functions/floatDirection'
+import { columnWidth, floatDirection } from '../Functions'
 
-let gridShift = (shift = 0, theme) => {
+let gridShift = (theme, shift = 0) => {
   const { direction, gutter } = theme
   if (!direction || gutter === undefined) return false
   if (shift > 0) {
-    let width = columnWidth({theme, span: shift})
+    let width = columnWidth(theme, shift)
+    
     return {
       [`${floatDirection(direction)}`]: `
         calc(${width} + ${gutter})
-      `.replace(/\s+/g, ' ').trim()
+      `.replace(/\s+/g, ' ').trim(),
+      position: 'relative'
     }
   } else {
     return {

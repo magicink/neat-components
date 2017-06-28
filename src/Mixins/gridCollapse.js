@@ -1,7 +1,9 @@
-import floatDirection from '../Functions/floatDirection'
-import floatOppositeDirection from '../Functions/floatOppositeDirection'
-import parseUnit from '../Functions/parseUnit'
-import stripUnit from '../Functions/stripUnit'
+import {
+  floatDirection,
+  floatOppositeDirection,
+  parseUnit,
+  stripUnit
+} from '../Functions'
 
 let gridCollapse = (theme) => {
   const { direction, gutter } = theme

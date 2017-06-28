@@ -1,26 +1,26 @@
 import parseUnit from './parseUnit'
 
-test('passing in 12px', () => {
+test('should handle the typical use case', () => {
   let result = parseUnit('12px')
   expect(result).toBe('px')
 })
 
-test('passing in 12 px', () => {
+test('should handle a space between the number and unit', () => {
   let result = parseUnit('12 px')
   expect(result).toBe('px')
 })
 
-test('passing in 12', () => {
+test('should handle no unit', () => {
   let result = parseUnit('12')
   expect(result).toBe('')
 })
 
-test('passing in nothing', () => {
+test('should handle no data', () => {
   let result = parseUnit()
   expect(result).toBe('')
 })
 
-test('passing in a percentage', () => {
+test('should handle % signs', () => {
   let result = parseUnit('5%')
   expect(result).toBe('%')
 })

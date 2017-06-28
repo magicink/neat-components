@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "cross-env NODE_ENV=prod rollup -c",
+    "build:develop": "cross-env NODE_ENV=prod rollup -c -w",
     "test": "cross-env NODE_ENV=test jest"
   },
   "devDependencies": {
@@ -18,7 +19,8 @@
     "regenerator-runtime": "^0.10.5",
     "rollup": "^0.43.0",
     "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-watch": "^4.0.0"
   },
   "dependencies": {},
   "keywords": [
@@ -28,10 +30,9 @@
     "components",
     "styled-components"
   ],
-  "standard": {
-    "globals": [
-      "expect",
-      "test"
+  "jest": {
+    "roots": [
+      "<rootDir>/src/"
     ]
   }
 }

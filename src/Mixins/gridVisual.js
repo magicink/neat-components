@@ -1,4 +1,4 @@
-import columnWidth from '../Functions/columnWidth'
+import { columnWidth } from '../Functions'
 
 let gridVisual = (theme) => {
   let { color, gutter } = theme
@@ -9,7 +9,7 @@ let gridVisual = (theme) => {
       repeating-linear-gradient(
         to right, transparent, transparent,
         ${color} ${gutter},
-        ${color} calc(${columnWidth({theme, span: 1})} + ${gutter})
+        ${color} calc(${columnWidth(theme, 1)} + ${gutter})
       )
     `.replace(/\s+/g, ' ').trim()
   }

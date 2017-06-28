@@ -1,20 +1,11 @@
-import columnWidth from '../Functions/columnWidth'
-import floatDirection from '../Functions/floatDirection'
+import { columnWidth, floatDirection } from '../Functions'
 
-let gridColumn = ({
-  span,
-  theme
-} = {
-  span: 1
-}) => {
+let gridColumn = (theme, span = 1) => {
   const { columns, direction, gutter } = theme
-  if (!columns || !direction || gutter === undefined) return false
-  console.log(isNaN(span))
-  if (isNaN(span)) return false
   span = Math.floor(span)
   if (span > columns) span = columns
   return {
-    width: `calc(${columnWidth({theme, span})})`,
+    width: `calc(${columnWidth(theme, span)})`,
     float: `${floatDirection(direction)}`,
     [`margin-${floatDirection(direction)}`]: gutter
   }

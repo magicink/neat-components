@@ -11,13 +11,11 @@ let Neat = ({
   gutter: '20px',
   media: null
 }) => ({
-  theme: {
-    color,
-    columns,
-    direction,
-    gutter,
-    media
-  }
+  color,
+  columns,
+  direction,
+  gutter,
+  media
 })
 
 export default Neat
