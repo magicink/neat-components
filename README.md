@@ -57,5 +57,13 @@ class App extends Component {
 }
 
 export default App
-
 ```
+
+## API
+### gridCollapse
+### gridColumn
+### gridContainer
+### gridMedia
+### gridShift
+### gridPush
+### gridVisual
