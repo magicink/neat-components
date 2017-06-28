@@ -74,6 +74,15 @@ var floatOppositeDirection = function floatOppositeDirection() {
   }
 };
 
+var parseMedia = function parseMedia(media) {
+  if (!media) return false;
+  if (typeof media === 'number') {
+    return 'only screen and (min-width: ' + media + 'px)';
+  } else if (typeof media === 'string') {
+    return media;
+  }
+};
+
 var defineProperty = function (obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -87,6 +96,38 @@ var defineProperty = function (obj, key, value) {
   }
 
   return obj;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var taggedTemplateLiteral = function (strings, raw) {
+  return Object.freeze(Object.defineProperties(strings, {
+    raw: {
+      value: Object.freeze(raw)
+    }
+  }));
 };
 
 var gridCollapse = function gridCollapse(theme) {
@@ -125,21 +166,6 @@ var gridContainer = function gridContainer() {
     content: '',
     display: 'block'
   });
-};
-
-var gridPush = function gridPush(theme) {
-  var push = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  var direction = theme.direction,
-      gutter = theme.gutter;
-
-  if (push > 0) {
-    var gutterValue = stripUnit(gutter);
-    var gutterUnit = parseUnit(gutter);
-    var affordance = '' + gutterValue * 2 + gutterUnit;
-    return defineProperty({}, 'margin-' + floatDirection(direction), ('\n        calc(' + columnWidth(theme, push) + ' + ' + affordance + ')\n      ').replace(/\s+/g, ' ').trim());
-  } else {
-    return defineProperty({}, 'margin-' + floatDirection(direction), gutter);
-  }
 };
 
 function createCommonjsModule$1(fn, module) {
@@ -8068,7 +8094,33 @@ var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 
 var styled = _styled(StyledComponent, constructWithOptions);
 
-console.log(css);
+var _templateObject = taggedTemplateLiteral(['\n    @media ', ' {\n      ', '\n    }\n  '], ['\n    @media ', ' {\n      ', '\n    }\n  ']);
+
+var gridMedia = function gridMedia(theme) {
+  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
+  var media = theme.media;
+
+  if (!media) return false;
+  return css(_templateObject, parseMedia(media), css.apply(undefined, args));
+};
+
+var gridPush = function gridPush(theme) {
+  var push = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var direction = theme.direction,
+      gutter = theme.gutter;
+
+  if (push > 0) {
+    var gutterValue = stripUnit(gutter);
+    var gutterUnit = parseUnit(gutter);
+    var affordance = '' + gutterValue * 2 + gutterUnit;
+    return defineProperty({}, 'margin-' + floatDirection(direction), ('\n        calc(' + columnWidth(theme, push) + ' + ' + affordance + ')\n      ').replace(/\s+/g, ' ').trim());
+  } else {
+    return defineProperty({}, 'margin-' + floatDirection(direction), gutter);
+  }
+};
 
 var gridShift = function gridShift(theme) {
   var shift = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -8102,6 +8154,7 @@ exports['default'] = Neat$1;
 exports.gridCollapse = gridCollapse;
 exports.gridColumn = gridColumn;
 exports.gridContainer = gridContainer;
+exports.gridMedia = gridMedia;
 exports.gridPush = gridPush;
 exports.gridShift = gridShift;
 exports.gridVisual = gridVisual;
