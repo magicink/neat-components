@@ -5,11 +5,10 @@ let gridShift = (theme, shift = 0) => {
   if (!direction || gutter === undefined) return false
   if (shift > 0) {
     let width = columnWidth(theme, shift)
-    
     return {
       [`${floatDirection(direction)}`]: `
         calc(${width} + ${gutter})
-      `.replace(/\s+/g, ' ').trim(),
+      `,
       position: 'relative'
     }
   } else {

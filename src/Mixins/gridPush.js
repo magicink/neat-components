@@ -14,7 +14,7 @@ let gridPush = (theme, push = 0) => {
     return {
       [`margin-${floatDirection(direction)}`]: `
         calc(${columnWidth(theme, push)} + ${affordance})
-      `.replace(/\s+/g, ' ').trim()
+      `
     }
   } else {
     return {

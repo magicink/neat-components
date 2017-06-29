@@ -11,7 +11,7 @@ let gridVisual = (theme) => {
         ${color} ${gutter},
         ${color} calc(${columnWidth(theme, 1)} + ${gutter})
       )
-    `.replace(/\s+/g, ' ').trim()
+    `
   }
 }
 
