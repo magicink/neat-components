@@ -32,7 +32,8 @@
     "thoughtbot",
     "styled",
     "components",
-    "styled-components"
+    "styled-components",
+    "grid"
   ],
   "jest": {
     "roots": [

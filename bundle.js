@@ -2,14 +2,16 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var defaults = {
+  color: null,
+  columns: 12,
+  direction: 'ltr',
+  gutter: '20px',
+  media: null
+};
+
 var Neat$1 = function Neat() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    color: null,
-    columns: 12,
-    direction: 'ltr',
-    gutter: '20px',
-    media: null
-  },
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaults,
       color = _ref.color,
       columns = _ref.columns,
       direction = _ref.direction,
@@ -17,11 +19,11 @@ var Neat$1 = function Neat() {
       media = _ref.media;
 
   return {
-    color: color,
-    columns: columns,
-    direction: direction,
-    gutter: gutter,
-    media: media
+    color: color || defaults.color,
+    columns: columns || defaults.columns,
+    direction: direction || defaults.direction,
+    gutter: gutter || defaults.direction,
+    media: media || defaults.media
   };
 };
 
@@ -1542,6 +1544,7 @@ object-assign
 @license MIT
 */
 
+/* eslint-disable no-unused-vars */
 var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
 var propIsEnumerable = Object.prototype.propertyIsEnumerable;
@@ -1635,6 +1638,13 @@ var index$1$1 = shouldUseNative() ? Object.assign : function (target, source) {
  *
  * 
  */
+/**
+ * WARNING: DO NOT manually require this module.
+ * This is a replacement for `invariant(...)` used by the error code system
+ * and will _only_ be required by the corresponding babel pass.
+ * It always throws.
+ */
+
 function reactProdInvariant(code) {
   var argCount = arguments.length - 1;
 
@@ -1654,6 +1664,17 @@ function reactProdInvariant(code) {
 }
 
 var reactProdInvariant_1 = reactProdInvariant;
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
 
 function makeEmptyFunction$1(arg) {
   return function () {
@@ -1680,6 +1701,13 @@ emptyFunction$1$1.thatReturnsArgument = function (arg) {
 };
 
 var emptyFunction_1$1 = emptyFunction$1$1;
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
 
 var warning$1$1 = emptyFunction_1$1;
 
@@ -1860,6 +1888,17 @@ var emptyObject_1 = emptyObject;
  *
  */
 
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
 var validateFormat$1 = function validateFormat(format) {};
 
 if (process.env.NODE_ENV !== 'production') {
@@ -1903,6 +1942,20 @@ var invariant_1$1 = invariant$1$1;
  *
  */
 
+/**
+ * Forked from fbjs/warning:
+ * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
+ *
+ * Only change is we use console.warn instead of console.error,
+ * and do nothing when 'console' is not supported.
+ * This really simplifies the code.
+ * ---
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
 var lowPriorityWarning$1 = function () {};
 
 if (process.env.NODE_ENV !== 'production') {
@@ -1942,6 +1995,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 var lowPriorityWarning_1 = lowPriorityWarning$1;
 
+/**
+ * Base class helpers for the updating state of a component.
+ */
 function ReactComponent(props, context, updater) {
   this.props = props;
   this.context = context;
@@ -2060,6 +2116,13 @@ var ReactBaseClasses = {
   PureComponent: ReactPureComponent
 };
 
+/**
+ * Static poolers. Several custom versions for each potential number of
+ * arguments. A completely generic pooler is easy to implement, but would
+ * require accessing the `arguments` object. In each of these, `this` refers to
+ * the Class itself, not an instance. If any others are needed, simply add them
+ * here, or in their own files.
+ */
 var oneArgumentPooler = function (copyFieldsFrom) {
   var Klass = this;
   if (Klass.instancePool.length) {
@@ -2159,6 +2222,12 @@ var PooledClass_1 = PooledClass;
  * 
  */
 
+/**
+ * Keeps track of the current owner.
+ *
+ * The current owner is the component who should own any components that are
+ * currently being constructed.
+ */
 var ReactCurrentOwner = {
   /**
    * @internal
@@ -2179,6 +2248,9 @@ var ReactCurrentOwner_1 = ReactCurrentOwner;
  *
  * 
  */
+
+// The Symbol used to tag the ReactElement type. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
 
 var REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol['for'] && Symbol['for']('react.element') || 0xeac7;
 
@@ -2519,6 +2591,8 @@ var ReactElement_1 = ReactElement;
  * 
  */
 
+/* global Symbol */
+
 var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
 var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
 
@@ -2554,6 +2628,13 @@ var getIteratorFn_1 = getIteratorFn;
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * 
+ */
+
+/**
+ * Escape and wrap key so it is safe to use as a reactid
+ *
+ * @param {string} key to be escaped.
+ * @return {string} the escaped key.
  */
 
 function escape(key) {
@@ -3611,6 +3692,11 @@ var ReactElementValidator$2 = {
 
 var ReactElementValidator_1 = ReactElementValidator$2;
 
+/**
+ * Create a factory that creates HTML tag elements.
+ *
+ * @private
+ */
 var createDOMFactory = ReactElement_1.createFactory;
 if (process.env.NODE_ENV !== 'production') {
   var ReactElementValidator$1 = ReactElementValidator_1;
@@ -4319,6 +4405,11 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
 
   return ReactPropTypes;
 };
+
+// React 15.5 references this module, and assumes PropTypes are still callable in production.
+// Therefore we re-export development-only version with all the PropTypes checks here.
+// However if one is migrating to the `prop-types` npm library, they will go through the
+// `index.js` entry point, and it will branch depending on the environment.
 
 var factory_1 = function(isValidElement) {
   // It is still allowed in 15.5.
@@ -5209,6 +5300,20 @@ var isValidElement$1 = ReactElement_1.isValidElement;
 
 var createClass$2 = factory_1$2(Component, isValidElement$1, ReactNoopUpdateQueue_1);
 
+/**
+ * Returns the first child in a collection of children and verifies that there
+ * is only one child in the collection.
+ *
+ * See https://facebook.github.io/react/docs/top-level-api.html#react.children.only
+ *
+ * The current implementation of this function assumes that a single child gets
+ * passed without a wrapper, but the purpose of this helper function is to
+ * abstract away the particular structure of children.
+ *
+ * @param {?object} children Child collection structure.
+ * @return {ReactElement} The first and only `ReactElement` contained in the
+ * structure.
+ */
 function onlyChild(children) {
   !ReactElement_1.isValidElement(children) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'React.Children.only expected to receive a single React element child.') : reactProdInvariant_1('143') : void 0;
   return children;
@@ -5328,6 +5433,17 @@ var react = React_1;
 
 var react_1 = react.Component;
 var react_2 = react.createElement;
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks
+ */
 
 var _uppercasePattern = /([A-Z])/g;
 
@@ -7932,6 +8048,8 @@ var _styled = (function (styledComponent, constructWithOptions) {
 });
 
 //      
+
+
 var _constructWithOptions = (function (css) {
   var constructWithOptions = function constructWithOptions(componentConstructor, tag) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -7965,15 +8083,17 @@ var _constructWithOptions = (function (css) {
   return constructWithOptions;
 });
 
-/**
- * Copyright 2015, Yahoo! Inc.
- * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
- */
+//      
+
+/* Import singletons */
+/* Import singleton constructors */
+/* Import components */
+/* Import Higher Order Components */
+/* Instantiate singletons */
 var ComponentStyle = _ComponentStyle(generateAlphabeticName, flatten, stringifyRules);
 var constructWithOptions = _constructWithOptions(css);
 var StyledComponent = _StyledComponent(ComponentStyle, constructWithOptions);
 
-/* Instantiate exported singletons */
 var styled = _styled(StyledComponent, constructWithOptions);
 
 var _templateObject = taggedTemplateLiteral(['\n    @media ', ' {\n      ', '\n    }\n  '], ['\n    @media ', ' {\n      ', '\n    }\n  ']);
@@ -7998,7 +8118,7 @@ var gridPush = function gridPush(theme) {
     var gutterValue = stripUnit(gutter);
     var gutterUnit = parseUnit(gutter);
     var affordance = '' + gutterValue * 2 + gutterUnit;
-    return defineProperty({}, 'margin-' + floatDirection(direction), ('\n        calc(' + columnWidth(theme, push) + ' + ' + affordance + ')\n      ').replace(/\s+/g, ' ').trim());
+    return defineProperty({}, 'margin-' + floatDirection(direction), '\n        calc(' + columnWidth(theme, push) + ' + ' + affordance + ')\n      ');
   } else {
     return defineProperty({}, 'margin-' + floatDirection(direction), gutter);
   }
@@ -8014,8 +8134,7 @@ var gridShift = function gridShift(theme) {
     var _ref;
 
     var width = columnWidth(theme, shift);
-
-    return _ref = {}, defineProperty(_ref, '' + floatDirection(direction), ('\n        calc(' + width + ' + ' + gutter + ')\n      ').replace(/\s+/g, ' ').trim()), defineProperty(_ref, 'position', 'relative'), _ref;
+    return _ref = {}, defineProperty(_ref, '' + floatDirection(direction), '\n        calc(' + width + ' + ' + gutter + ')\n      '), defineProperty(_ref, 'position', 'relative'), _ref;
   } else {
     return defineProperty({}, '' + floatDirection(direction), gutter);
   }
@@ -8028,7 +8147,7 @@ var gridVisual = function gridVisual(theme) {
   if (!gutter) return false;
   color = color || '';
   return {
-    'background-image': ('\n      repeating-linear-gradient(\n        to right, transparent, transparent,\n        ' + color + ' ' + gutter + ',\n        ' + color + ' calc(' + columnWidth(theme, 1) + ' + ' + gutter + ')\n      )\n    ').replace(/\s+/g, ' ').trim()
+    'background-image': '\n      repeating-linear-gradient(\n        to right, transparent, transparent,\n        ' + color + ' ' + gutter + ',\n        ' + color + ' calc(' + columnWidth(theme, 1) + ' + ' + gutter + ')\n      )\n    '
   };
 };
 

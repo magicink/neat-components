@@ -1,6 +1,6 @@
 # Neat Components
 
-A Styled Components implementation of Thoughtbot's Neat (2.0)
+A Styled Components implementation of Thoughtbot's Neat 2.0
 
 ### Usage
 
@@ -60,10 +60,11 @@ export default App
 ```
 
 ## API
-### gridCollapse
-### gridColumn
-### gridContainer
-### gridMedia
-### gridShift
-### gridPush
-### gridVisual
+### Neat()
+### gridCollapse()
+### gridColumn()
+### gridContainer()
+### gridMedia()
+### gridShift()
+### gridPush()
+### gridVisual()
