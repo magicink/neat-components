@@ -214,9 +214,6 @@ class App extends Component {
 Used to inject media queries.
 
 ```javascript
-import styled, { css } from 'styled-components'
-import Neat, { gridColumn, gridMedia } from 'neat-components'
-
 let MobileGrid = Neat({
   columns: 1,
   gutter: '20px',
@@ -226,7 +223,7 @@ let MobileGrid = Neat({
 let DesktopGrid = Neat({
   columns: 1,
   gutter: '40px',
-  media: 'only screen and (min-width: 801px)'
+  media: 'only screen and (max-width: 1200px)'
 })
 
 let Logo = styled.div`
@@ -235,9 +232,7 @@ let Logo = styled.div`
   height: 50px;
   ${props => gridColumn(MobileGrid, 1)}
   ${props => gridMedia(DesktopGrid, [
-    css`
-      height: 150px;
-    `,
+    `height: 150px`,
     gridColumn(MobileGrid, 1)
   ])}
 `
