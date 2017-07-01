@@ -68,9 +68,13 @@ Returns a theme object. You can pass this theme to a `ThemeProvider` component. 
 You can pass in a `settings` object to create a custom grid. The `settings` object has the following properties:
 
 **`color`**: Used by `gridVisual()` to determine the color the grid (default: `null`).
+
 **`columns`**: The number of columns the grid supports (default: `12`).
+
 **`direction`**: The direction columns float. Accepts `ltr` (default) or `rtl`.
+
 **`gutter`**: The spacing between columns (default: `20px`)
+
 **`media`**: Used by `gridMedia()` to specify the media the grid should be applied. It can accept a string (i.e. `only screen and (max-width: 800px)`) or a number (i.e `800`). The later would produce `only screen and (min-width: 800px)`. Defaults to `null`.
 
 ```javascript
