@@ -16,7 +16,7 @@ let Neat = ({
   color: color || defaults.color,
   columns: columns || defaults.columns,
   direction: (direction === 'ltr' || direction === 'rtl') ? direction : defaults.direction,
-  gutter: (typeof gutter === 'number') ? gutter : defaults.gutter,
+  gutter: gutter || defaults.gutter,
   media: media || defaults.media
 })
 
