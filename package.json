@@ -1,12 +1,13 @@
 {
   "name": "neat-components",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "bundle.js",
   "license": "MIT",
   "repository": "magicink/neat-components",
   "scripts": {
     "build": "cross-env NODE_ENV=prod rollup -c",
     "build:develop": "cross-env NODE_ENV=prod rollup -c -w",
+    "lint": "standard \"./src/**.js\"",
     "test": "cross-env NODE_ENV=test jest"
   },
   "devDependencies": {
@@ -25,6 +26,7 @@
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-watch": "^4.0.0",
+    "standard": "^10.0.2",
     "styled-components": "^2.1.0"
   },
   "dependencies": {},
@@ -43,6 +45,13 @@
   "jest": {
     "roots": [
       "<rootDir>/src/"
+    ]
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "expect",
+      "it"
     ]
   }
 }
