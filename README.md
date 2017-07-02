@@ -166,7 +166,7 @@ class App extends Component {
 
 ### gridColumn(theme, span)
 
-Returns an element that occupies `span` number of a given theme's columns
+Creates a component that occupies `span` number of a given theme's columns
 
 ```javascript
 let Column = styled.div`
@@ -193,7 +193,7 @@ class App extends Component {
 
 ### gridContainer()
 
-Returns properties of a clearfix element.
+Injects a clearfix solution into the component.
 
 ```javascript
 const Container = styled.div`
@@ -215,7 +215,7 @@ class App extends Component {
 
 ### gridMedia(theme)
 
-Used to inject media queries.
+Used to inject media queries into the component.
 
 ```javascript
 let MobileGrid = Neat({
@@ -244,7 +244,7 @@ let Logo = styled.div`
 
 ### gridShift(theme, shift)
 
-Creates an element that is shifted `shift` number, allowing columns to be reorganized.
+Shifts a component `shift` number of columns. This reorganizes the components..
 
 ```javascript
 let constants = () => {
@@ -287,21 +287,45 @@ class App extends Component {
 
 ### gridPush(theme, push)
 
-Pushes the 
+Pushes the component `push` number of columns. It's similar to `gridShift()` but does not rearrange the components.
 
 ```javascript
-import styled from 'styled-components'
-import { gridColumn, gridPush } from 'neat-components'
+let constants = () => {
+  return `
+    background-color: blue;
+    height: 50px;
+    margin-top: 1em;
+  `
+}
 
-let Logo = styled.div`
-  align-items: center;
-  display: flex;
-  height: 50px;
+let Container = styled.div`
+  ${gridContainer()}
+`
+let Column = styled.div`
+  ${constants()}
+  ${props => gridColumn(props.theme, 1)}
+`
+
+let Pushed = styled.div`
+  ${constants()}
   ${props => gridColumn(props.theme, 1)}
   ${props => gridPush(props.theme, 2)}
 `
 
-export default Logo
+class App extends Component {
+  render () {
+    return (
+      <ThemeProvider theme={Neat()}>
+        <div>
+          <Container>
+            <Column />
+            <Pushed /> // Pushed one column to the right.
+          </Container>
+        </div>
+      </ThemeProvider>
+    )
+  }
+}
 
 ```
 
