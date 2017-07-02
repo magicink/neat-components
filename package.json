@@ -1,8 +1,9 @@
 {
   "name": "neat-components",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "bundle.js",
   "license": "MIT",
+  "repository": "magicink/neat-components",
   "scripts": {
     "build": "cross-env NODE_ENV=prod rollup -c",
     "build:develop": "cross-env NODE_ENV=prod rollup -c -w",
@@ -27,6 +28,10 @@
     "styled-components": "^2.1.0"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "react": "^15.6.1",
+    "styled-components": "^2.1.0"
+  },
   "keywords": [
     "neat",
     "thoughtbot",
