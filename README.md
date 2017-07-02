@@ -169,6 +169,10 @@ class App extends Component {
 Returns an element that occupies `span` number of a given theme's columns
 
 ```javascript
+let Column = styled.div`
+  ${props => gridColumn(props.theme, 1)}
+`
+
 class App extends Component {
   render () {
     return (
