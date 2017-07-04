@@ -29,12 +29,6 @@ let Column = styled.div`
   ${props => gridColumn(props.theme, 1)}
 `
 
-let Shifted = styled.div`
-  ${constants()}
-  ${props => gridColumn(props.theme, 1)}
-  ${props => gridShift(props.theme, 2)}
-`
-
 class App extends Component {
   render () {
     return (
