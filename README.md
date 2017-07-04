@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/magicink/neat-components.svg?branch=master)](https://travis-ci.org/magicink/neat-components)
+
 # Neat Components
 
 A Styled Components implementation of Thoughtbot's Neat 2.0
