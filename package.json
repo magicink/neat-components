@@ -9,7 +9,7 @@
     "build": "cross-env NODE_ENV=prod rollup -c",
     "build:develop": "cross-env NODE_ENV=prod rollup -c -w",
     "lint": "standard \"./src/**.js\"",
-    "test": "cross-env NODE_ENV=test jest"
+    "test": "yarn standard && cross-env NODE_ENV=test jest"
   },
   "devDependencies": {
     "@types/jest": "^20.0.2",
@@ -52,7 +52,8 @@
     "globals": [
       "describe",
       "expect",
-      "it"
+      "it",
+      "test"
     ]
   }
 }
