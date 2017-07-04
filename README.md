@@ -332,3 +332,8 @@ class App extends Component {
 ### gridVisual()
 
 Creates series of visual guidelines based on the grid system
+
+## References
+
+- [Neat 2.x](http://neat.bourbon.io)
+- [styled-components](https://www.styled-components.com/)
