@@ -171,11 +171,49 @@ var gridContainer = function gridContainer() {
   });
 };
 
-function createCommonjsModule$1(fn, module) {
+/*!
+ * isobject <https://github.com/jonschlinkert/isobject>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+var index$1 = function isObject(val) {
+  return val != null && typeof val === 'object' && Array.isArray(val) === false;
+};
+
+function isObjectObject(o) {
+  return index$1(o) === true
+    && Object.prototype.toString.call(o) === '[object Object]';
+}
+
+var index = function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObjectObject(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (typeof ctor !== 'function') return false;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObjectObject(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+};
+
+function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var stylis = createCommonjsModule$1(function (module, exports) {
+var stylis$1 = createCommonjsModule(function (module, exports) {
 /*
  *          __        ___
  *    _____/ /___  __/ (_)____
@@ -188,8 +226,8 @@ var stylis = createCommonjsModule$1(function (module, exports) {
  */
 /* eslint-disable */
 (function (factory) {
-	module['exports'] = factory();
-}(function () {
+	module['exports'] = factory(null);
+}(/** @param {*=} options */function factory (options) {
 
 	'use strict';
 
@@ -239,7 +277,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	var propertiesptn = / +\s*(?![^(]*[)])/g; /* animation properties */
 	var elementptn = / *[\0] */g; /* selector elements */
 	var selectorptn = /,\r+?/g; /* splits selectors */
-	var andptn = /\f?&/g; /* match & */
+	var andptn = /([\t\r\n ])*\f?&/g; /* match & */
 	var escapeptn = /:global\(((?:[^\(\)\[\]]*|\[.*\]|\([^\(\)]*\))*)\)/g; /* matches :global(.*) */
 	var invalidptn = /\W+/g; /* removes invalid characters from keyframes */
 	var keyframeptn = /@(k\w+)\s*(\S*)\s*/; /* matches @keyframes $1 */
@@ -250,6 +288,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	var tailptn = /(\{[^{]+?);(?=\})/g; /* matches tail semi-colons ;} */
 	var whiteptn = /\s{2,}/g; /* matches repeating whitespace */
 	var pseudoptn = /([^\(])(:+) */g; /* pseudo element */
+	var writingptn = /[svh]\w+-[tblr]{2}/; /* match writing mode property values */
 
 	/* vendors */
 	var webkit = '-webkit-';
@@ -293,7 +332,6 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	var READONLY = 111; /* o */
 	var IMPORT = 169; /* <at>i */
 	var CHARSET = 163; /* <at>c */
-	var PAGE = 112; /* <at>p */
 	var DOCUMENT = 100; /* <at>d */
 
 	var column = 1; /* current column */
@@ -305,6 +343,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	var escape = 1; /* escape :global() pattern */
 	var compress = 0; /* compress output */
 	var semicolon = 0; /* no/semicolon option */
+	var preserve = 0; /* preserve empty selectors */
 
 	/* empty reference */
 	var array = [];
@@ -472,7 +511,6 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 
 								switch (second) {
 									case DOCUMENT:
-									case PAGE:
 									case MEDIA:
 									case SUPPORTS: {
 										selector = current;
@@ -486,10 +524,15 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 								child = compile(current, selector, child, second);
 								length = child.length;
 
+								// preserve empty @at-rule
+								if (preserve > 0 && length === 0) {
+									length = chars.length;
+								}
+
 								// execute plugins, @at-rule context
 								if (plugged > 0) {
 									selector = select(array, chars, invert);
-									result = proxy(ATRUL, child, selector, current, line, column, out.length, second);
+									result = proxy(ATRUL, child, selector, current, line, column, length, second);
 									chars = selector.join('');
 
 									if (result !== void 0) {
@@ -503,7 +546,6 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 								if (length > 0) {
 									switch (second) {
 										case DOCUMENT:
-										case PAGE:
 										case MEDIA:
 										case SUPPORTS: {
 											child = chars + '{' + child + '}';
@@ -654,14 +696,22 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 					// increment column position
 					column++;
 
-					// ignore tabs
-					if (code === TAB) {
-						break
-					}
-
 					// current character
 					char = body.charAt(caret);
 
+					if (code === TAB && quote === 0) {
+						switch (tail) {
+							case TAB:
+							case SPACE: {
+								char = '';
+								break
+							}
+							default: {
+								char = parentheses === 0 ? '' : ' ';
+							}
+						}
+					}
+						
 					// remove comments, escape functions, strings, attributes and prepare selectors
 					switch (code) {
 						// escape breaking control characters
@@ -727,12 +777,22 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 						case DOUBLEQUOTE: {
 							if (comment === 0) {
 								quote = quote === code ? 0 : (quote === 0 ? code : quote);
+								// " last character, add synthetic padding
+								if (caret === eol) {
+									eol++;
+									eof++;
+								}
 							}
 							break
 						}
 						case SINGLEQUOTE: {
 							if (comment === 0) {
 								quote = quote === code ? 0 : (quote === 0 ? code : quote);
+								// ' last character, add synthetic padding
+								if (caret === eol) {
+									eol++;
+									eof++;
+								}
 							}
 							break
 						}
@@ -752,7 +812,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 						// functions
 						case CLOSEPARENTHESES: {
 							if (quote + comment + bracket === 0) {
-								// ) is the last character, add synthetic padding to avoid skipping this buffer
+								// ) last character, add synthetic padding
 								if (caret === eol) {
 									eol++;
 									eof++;
@@ -915,13 +975,13 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 
 		length = out.length;
 
-		// execute plugins, block context
-		if (length > 0 && plugged > 0) {
-			result = proxy(BLCKS, out, current, parent, line, column, length, id);
-
-			if (result !== void 0) {
-				length = (out = result).length;
-			}
+		// preserve empty selector
+ 		if (preserve > 0) {
+ 			if (length === 0 && children.length === 0 && (current[0].length === 0) === false) {
+ 				if (id !== MEDIA || (current.length === 1 && (cascade > 0 ? nscopealt : nscope) === current[0])) {
+					length = current.join(',').length + 2; 					
+ 				}
+ 			}
 		}
 
 		if (length > 0) {
@@ -930,16 +990,26 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 				isolate(current);
 			}
 
+			// execute plugins, block context
+			if (plugged > 0) {
+				result = proxy(BLCKS, out, current, parent, line, column, length, id);
+
+				if (result !== void 0 && (out = result).length === 0) {
+					return flat + out + children
+				}
+			}		
+
 			out = current.join(',') + '{' + out + '}';
 
 			if (vendor*pattern > 0) {
 				switch (pattern) {
+					// ::read-only
 					case READONLY: {
 						out = out.replace(readonlyptn, ':'+moz+'$1')+out;
 						break
 					}
+					// ::placeholder
 					case PLACEHOLDER: {
-						// ::placeholder vendor prefix
 						out = (
 							out.replace(plcholdrptn, '::' + webkit + 'input-$1') +
 							out.replace(plcholdrptn, '::' + moz + '$1') +
@@ -1021,7 +1091,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 						}
 					}
 					default: {
-						return selector.replace(andptn, parent.trim())
+						return selector.replace(andptn, '$1'+parent.trim())
 					}
 				}
 				break
@@ -1032,7 +1102,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 					// g in :global
 					case 103: {
 						if (escape > 0 && cascade > 0) {
-							return selector.replace(escapeptn, '$1').replace(andptn, nscope)
+							return selector.replace(escapeptn, '$1').replace(andptn, '$1'+nscope)
 						}
 						break
 					}
@@ -1045,7 +1115,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 			default: {
 				// html &
 				if (invert*cascade > 0 && selector.indexOf('\f') > 0) {
-					return selector.replace(andptn, parent.trim())
+					return selector.replace(andptn, (parent.charCodeAt(0) === COLON ? '' : '$1')+parent.trim())
 				}
 			}
 		}
@@ -1074,10 +1144,10 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 		} else if (vendor > 0) {
 			// vendor prefix
 			switch (hash) {
-				// background/backface-visibility, b, a, c
-				case 883: {
-					// backface-visibility, -
-					if (out.charCodeAt(8) === DASH) {
+				// color/column, c, o, l
+				case 963: {
+					// column
+					if (out.charCodeAt(5) === 110) {
 						out = webkit + out + out;
 					}
 					break
@@ -1094,13 +1164,21 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 					out = webkit + out + moz + out + ms + out + out;
 					break
 				}
+				// background/backface-visibility, b, a, c
+				case 883: {
+					// backface-visibility, -
+					if (out.charCodeAt(8) === DASH) {
+						out = webkit + out + out;
+					}
+					break
+				}
 				// flex: f, l, e
 				case 932: {
 					out = webkit + out + ms + out + out;
 					break
 				}
+				// order: o, r, d
 				case 964: {
-					// order: o, r, d
 					out = webkit + out + ms + 'flex' + '-' + out + out;
 					break
 				}
@@ -1179,10 +1257,14 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 					}
 					break
 				}
-				// transform, transition: t, r, a
 				// text-size-adjust: t, e, x
-				case 962:
 				case 1015: {
+					if (input.charCodeAt(9) !== DASH) {
+						break
+					}
+				}
+				// transform, transition: t, r, a
+				case 962: {
 					out = webkit + out + (out.charCodeAt(5) === 102 ? ms + out : '') + out;
 
 					// transitions
@@ -1190,6 +1272,35 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 						out = out.substring(0, out.indexOf(';', 27) + 1).replace(transformptn, '$1' + webkit + '$2') + out;
 					}
 
+					break
+				}
+				// writing-mode, w, r, i
+				case 1000: {
+					cache = out.substring(13).trim();
+					index = cache.indexOf('-')+1;
+
+					switch (cache.charCodeAt(0)+cache.charCodeAt(index)) {
+						// vertical-lr
+						case 226: {
+							cache = out.replace(writingptn, 'tb');
+							break
+						}
+						// vertical-rl
+						case 232: {
+							cache = out.replace(writingptn, 'tb-rl');
+							break
+						}
+						// horizontal-tb
+						case 220: {
+							cache = out.replace(writingptn, 'lr');
+							break
+						}
+						default: {
+							return out
+						}
+					}
+
+					out = webkit+out+ms+cache+out;
 					break
 				}
 			}
@@ -1237,7 +1348,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 									case 'infinite': case 'alternate': case 'backwards': case 'running':
 									case 'normal': case 'forwards': case 'both': case 'none': case 'linear':
 									case 'ease': case 'ease-in': case 'ease-out': case 'ease-in-out':
-									case 'paused': case 'reversed': case 'alternate-reverse': case 'inherit':
+									case 'paused': case 'reverse': case 'alternate-reverse': case 'inherit':
 									case 'initial': case 'unset': case 'step-start': case 'step-end': {
 										break
 									}
@@ -1449,9 +1560,9 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	/**
 	 * Set
 	 *
-	 * @param {Object} options
+	 * @param {*} options
 	 */
-	function set (options) {
+	function set (options) {		
 		for (var name in options) {
 			var value = options[name];
 			switch (name) {
@@ -1461,6 +1572,7 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 				case 'compress': compress = value|0; break
 				case 'prefix': vendor = value|0; break
 				case 'semicolon': semicolon = value|0; break
+				case 'preserve': preserve = value|0; break
 			}
 		}
 
@@ -1472,9 +1584,13 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 	 *
 	 * @param {string} selector
 	 * @param {string} input
-	 * @return {(string|*)}
+	 * @return {*}
 	 */
 	function stylis (selector, input) {
+		if (this !== void 0 && this.constructor === stylis) {
+			return factory(selector)
+		}
+
 		// setup
 		var ns = selector;
 		var code = ns.charCodeAt(0);
@@ -1500,10 +1616,15 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 		}
 
 		var selectors = [nscope];
+		var result;
 
 		// execute plugins, pre-process context
 		if (plugged > 0) {
-			proxy(PREPS, input, selectors, selectors, line, column, 0, 0);
+			result = proxy(PREPS, input, selectors, selectors, line, column, 0, 0);
+
+			if (result !== void 0 && typeof result === 'string') {
+				input = result;
+			}
 		}
 
 		// build
@@ -1511,13 +1632,11 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 
 		// execute plugins, post-process context
 		if (plugged > 0) {
-			var result = proxy(POSTS, output, selectors, selectors, line, column, output.length, 0);
-			
-			if (result !== void 0) {
-				// bypass minification
-				if (typeof(output = result) !== 'string') {
-					code = 0;
-				}
+			result = proxy(POSTS, output, selectors, selectors, line, column, output.length, 0);
+	
+			// bypass minification
+			if (result !== void 0 && typeof(output = result) !== 'string') {
+				code = 0;
 			}
 		}
 
@@ -1534,6 +1653,10 @@ var stylis = createCommonjsModule$1(function (module, exports) {
 
 	stylis['use'] = use;
 	stylis['set'] = set;
+
+	if (options !== void 0) {
+		set(options);
+	}
 
 	return stylis
 }));
@@ -1602,7 +1725,7 @@ function shouldUseNative() {
 	}
 }
 
-var index$1$1 = shouldUseNative() ? Object.assign : function (target, source) {
+var index$3 = shouldUseNative() ? Object.assign : function (target, source) {
 	var from;
 	var to = toObject(target);
 	var symbols;
@@ -1677,7 +1800,7 @@ var reactProdInvariant_1 = reactProdInvariant;
  * 
  */
 
-function makeEmptyFunction$1(arg) {
+function makeEmptyFunction(arg) {
   return function () {
     return arg;
   };
@@ -1688,20 +1811,20 @@ function makeEmptyFunction$1(arg) {
  * primarily useful idiomatically for overridable function endpoints which
  * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
  */
-var emptyFunction$1$1 = function emptyFunction() {};
+var emptyFunction = function emptyFunction() {};
 
-emptyFunction$1$1.thatReturns = makeEmptyFunction$1;
-emptyFunction$1$1.thatReturnsFalse = makeEmptyFunction$1(false);
-emptyFunction$1$1.thatReturnsTrue = makeEmptyFunction$1(true);
-emptyFunction$1$1.thatReturnsNull = makeEmptyFunction$1(null);
-emptyFunction$1$1.thatReturnsThis = function () {
+emptyFunction.thatReturns = makeEmptyFunction;
+emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
+emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
+emptyFunction.thatReturnsNull = makeEmptyFunction(null);
+emptyFunction.thatReturnsThis = function () {
   return this;
 };
-emptyFunction$1$1.thatReturnsArgument = function (arg) {
+emptyFunction.thatReturnsArgument = function (arg) {
   return arg;
 };
 
-var emptyFunction_1$1 = emptyFunction$1$1;
+var emptyFunction_1 = emptyFunction;
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -1710,7 +1833,7 @@ var emptyFunction_1$1 = emptyFunction$1$1;
  * same logic and follow the same code paths.
  */
 
-var warning$1$1 = emptyFunction_1$1;
+var warning = emptyFunction_1;
 
 if (process.env.NODE_ENV !== 'production') {
   (function () {
@@ -1734,7 +1857,7 @@ if (process.env.NODE_ENV !== 'production') {
       } catch (x) {}
     };
 
-    warning$1$1 = function warning(condition, format) {
+    warning = function warning(condition, format) {
       if (format === undefined) {
         throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
       }
@@ -1754,12 +1877,12 @@ if (process.env.NODE_ENV !== 'production') {
   })();
 }
 
-var warning_1$1 = warning$1$1;
+var warning_1 = warning;
 
 function warnNoop(publicInstance, callerName) {
   if (process.env.NODE_ENV !== 'production') {
     var constructor = publicInstance.constructor;
-    process.env.NODE_ENV !== 'production' ? warning_1$1(false, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, constructor && (constructor.displayName || constructor.name) || 'ReactClass') : void 0;
+    process.env.NODE_ENV !== 'production' ? warning_1(false, '%s(...): Can only update a mounted or mounting component. ' + 'This usually means you called %s() on an unmounted component. ' + 'This is a no-op. Please check the code for the %s component.', callerName, callerName, constructor && (constructor.displayName || constructor.name) || 'ReactClass') : void 0;
   }
 }
 
@@ -1900,18 +2023,18 @@ var emptyObject_1 = emptyObject;
  * will remain to ensure logic does not differ in production.
  */
 
-var validateFormat$1 = function validateFormat(format) {};
+var validateFormat = function validateFormat(format) {};
 
 if (process.env.NODE_ENV !== 'production') {
-  validateFormat$1 = function validateFormat(format) {
+  validateFormat = function validateFormat(format) {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
     }
   };
 }
 
-function invariant$1$1(condition, format, a, b, c, d, e, f) {
-  validateFormat$1(format);
+function invariant(condition, format, a, b, c, d, e, f) {
+  validateFormat(format);
 
   if (!condition) {
     var error;
@@ -1931,7 +2054,7 @@ function invariant$1$1(condition, format, a, b, c, d, e, f) {
   }
 }
 
-var invariant_1$1 = invariant$1$1;
+var invariant_1 = invariant;
 
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -2036,7 +2159,7 @@ ReactComponent.prototype.isReactComponent = {};
  * @protected
  */
 ReactComponent.prototype.setState = function (partialState, callback) {
-  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'setState(...): takes an object of state variables to update or a function which returns an object of state variables.') : reactProdInvariant_1('85') : void 0;
+  !(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null) ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'setState(...): takes an object of state variables to update or a function which returns an object of state variables.') : reactProdInvariant_1('85') : void 0;
   this.updater.enqueueSetState(this, partialState);
   if (callback) {
     this.updater.enqueueCallback(this, callback, 'setState');
@@ -2109,7 +2232,7 @@ ComponentDummy.prototype = ReactComponent.prototype;
 ReactPureComponent.prototype = new ComponentDummy();
 ReactPureComponent.prototype.constructor = ReactPureComponent;
 // Avoid an extra prototype jump for these methods.
-index$1$1(ReactPureComponent.prototype, ReactComponent.prototype);
+index$3(ReactPureComponent.prototype, ReactComponent.prototype);
 ReactPureComponent.prototype.isPureReactComponent = true;
 
 var ReactBaseClasses = {
@@ -2170,7 +2293,7 @@ var fourArgumentPooler$1 = function (a1, a2, a3, a4) {
 
 var standardReleaser = function (instance) {
   var Klass = this;
-  !(instance instanceof Klass) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Trying to release an instance into a pool of a different type.') : reactProdInvariant_1('25') : void 0;
+  !(instance instanceof Klass) ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Trying to release an instance into a pool of a different type.') : reactProdInvariant_1('25') : void 0;
   instance.destructor();
   if (Klass.instancePool.length < Klass.poolSize) {
     Klass.instancePool.push(instance);
@@ -2299,7 +2422,7 @@ function defineKeyPropWarningGetter(props, displayName) {
   var warnAboutAccessingKey = function () {
     if (!specialPropKeyWarningShown) {
       specialPropKeyWarningShown = true;
-      process.env.NODE_ENV !== 'production' ? warning_1$1(false, '%s: `key` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName) : void 0;
+      process.env.NODE_ENV !== 'production' ? warning_1(false, '%s: `key` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName) : void 0;
     }
   };
   warnAboutAccessingKey.isReactWarning = true;
@@ -2313,7 +2436,7 @@ function defineRefPropWarningGetter(props, displayName) {
   var warnAboutAccessingRef = function () {
     if (!specialPropRefWarningShown) {
       specialPropRefWarningShown = true;
-      process.env.NODE_ENV !== 'production' ? warning_1$1(false, '%s: `ref` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName) : void 0;
+      process.env.NODE_ENV !== 'production' ? warning_1(false, '%s: `ref` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName) : void 0;
     }
   };
   warnAboutAccessingRef.isReactWarning = true;
@@ -2510,7 +2633,7 @@ ReactElement.cloneElement = function (element, config, children) {
   var propName;
 
   // Original props are copied
-  var props = index$1$1({}, element.props);
+  var props = index$3({}, element.props);
 
   // Reserved names are extracted
   var key = element.key;
@@ -2770,7 +2893,7 @@ function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext)
               mapsAsChildrenAddendum = ' Check the render method of `' + mapsAsChildrenOwnerName + '`.';
             }
           }
-          process.env.NODE_ENV !== 'production' ? warning_1$1(didWarnAboutMaps, 'Using Maps as children is not yet fully supported. It is an ' + 'experimental feature that might be removed. Convert it to a ' + 'sequence / iterable of keyed ReactElements instead.%s', mapsAsChildrenAddendum) : void 0;
+          process.env.NODE_ENV !== 'production' ? warning_1(didWarnAboutMaps, 'Using Maps as children is not yet fully supported. It is an ' + 'experimental feature that might be removed. Convert it to a ' + 'sequence / iterable of keyed ReactElements instead.%s', mapsAsChildrenAddendum) : void 0;
           didWarnAboutMaps = true;
         }
         // Iterator will provide entry [k,v] tuples rather than values.
@@ -2798,7 +2921,7 @@ function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext)
         }
       }
       var childrenString = String(children);
-      process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Objects are not valid as a React child (found: %s).%s', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum) : reactProdInvariant_1('31', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum);
+      process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Objects are not valid as a React child (found: %s).%s', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum) : reactProdInvariant_1('31', childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString, addendum);
     }
   }
 
@@ -2921,7 +3044,7 @@ function mapSingleChildIntoContext(bookKeeping, child, childKey) {
 
   var mappedChild = func.call(context, child, bookKeeping.count++);
   if (Array.isArray(mappedChild)) {
-    mapIntoWithKeyPrefixInternal(mappedChild, result, childKey, emptyFunction_1$1.thatReturnsArgument);
+    mapIntoWithKeyPrefixInternal(mappedChild, result, childKey, emptyFunction_1.thatReturnsArgument);
   } else if (mappedChild != null) {
     if (ReactElement_1.isValidElement(mappedChild)) {
       mappedChild = ReactElement_1.cloneAndReplaceKey(mappedChild,
@@ -2990,7 +3113,7 @@ function countChildren(children, context) {
  */
 function toArray$1(children) {
   var result = [];
-  mapIntoWithKeyPrefixInternal(children, result, null, emptyFunction_1$1.thatReturnsArgument);
+  mapIntoWithKeyPrefixInternal(children, result, null, emptyFunction_1.thatReturnsArgument);
   return result;
 }
 
@@ -3147,29 +3270,29 @@ function describeID(id) {
   if (ownerID) {
     ownerName = ReactComponentTreeHook.getDisplayName(ownerID);
   }
-  process.env.NODE_ENV !== 'production' ? warning_1$1(element, 'ReactComponentTreeHook: Missing React element for debugID %s when ' + 'building stack', id) : void 0;
+  process.env.NODE_ENV !== 'production' ? warning_1(element, 'ReactComponentTreeHook: Missing React element for debugID %s when ' + 'building stack', id) : void 0;
   return describeComponentFrame(name, element && element._source, ownerName);
 }
 
 var ReactComponentTreeHook = {
   onSetChildren: function (id, nextChildIDs) {
     var item = getItem(id);
-    !item ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Item must have been set') : reactProdInvariant_1('144') : void 0;
+    !item ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Item must have been set') : reactProdInvariant_1('144') : void 0;
     item.childIDs = nextChildIDs;
 
     for (var i = 0; i < nextChildIDs.length; i++) {
       var nextChildID = nextChildIDs[i];
       var nextChild = getItem(nextChildID);
-      !nextChild ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Expected hook events to fire for the child before its parent includes it in onSetChildren().') : reactProdInvariant_1('140') : void 0;
-      !(nextChild.childIDs != null || typeof nextChild.element !== 'object' || nextChild.element == null) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Expected onSetChildren() to fire for a container child before its parent includes it in onSetChildren().') : reactProdInvariant_1('141') : void 0;
-      !nextChild.isMounted ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Expected onMountComponent() to fire for the child before its parent includes it in onSetChildren().') : reactProdInvariant_1('71') : void 0;
+      !nextChild ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Expected hook events to fire for the child before its parent includes it in onSetChildren().') : reactProdInvariant_1('140') : void 0;
+      !(nextChild.childIDs != null || typeof nextChild.element !== 'object' || nextChild.element == null) ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Expected onSetChildren() to fire for a container child before its parent includes it in onSetChildren().') : reactProdInvariant_1('141') : void 0;
+      !nextChild.isMounted ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Expected onMountComponent() to fire for the child before its parent includes it in onSetChildren().') : reactProdInvariant_1('71') : void 0;
       if (nextChild.parentID == null) {
         nextChild.parentID = id;
         // TODO: This shouldn't be necessary but mounting a new root during in
         // componentWillMount currently causes not-yet-mounted components to
         // be purged from our tree data so their parent id is missing.
       }
-      !(nextChild.parentID === id) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Expected onBeforeMountComponent() parent and onSetChildren() to be consistent (%s has parents %s and %s).', nextChildID, nextChild.parentID, id) : reactProdInvariant_1('142', nextChildID, nextChild.parentID, id) : void 0;
+      !(nextChild.parentID === id) ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Expected onBeforeMountComponent() parent and onSetChildren() to be consistent (%s has parents %s and %s).', nextChildID, nextChild.parentID, id) : reactProdInvariant_1('142', nextChildID, nextChild.parentID, id) : void 0;
     }
   },
   onBeforeMountComponent: function (id, element, parentID) {
@@ -3194,7 +3317,7 @@ var ReactComponentTreeHook = {
   },
   onMountComponent: function (id) {
     var item = getItem(id);
-    !item ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'Item must have been set') : reactProdInvariant_1('144') : void 0;
+    !item ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'Item must have been set') : reactProdInvariant_1('144') : void 0;
     item.isMounted = true;
     var isRoot = item.parentID === 0;
     if (isRoot) {
@@ -3397,9 +3520,9 @@ var ReactPropTypeLocationNames_1 = ReactPropTypeLocationNames;
  * 
  */
 
-var ReactPropTypesSecret$1$1 = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
-var ReactPropTypesSecret_1$1 = ReactPropTypesSecret$1$1;
+var ReactPropTypesSecret_1 = ReactPropTypesSecret;
 
 var ReactComponentTreeHook$1;
 
@@ -3412,7 +3535,7 @@ if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 't
   ReactComponentTreeHook$1 = ReactComponentTreeHook_1;
 }
 
-var loggedTypeFailures$1 = {};
+var loggedTypeFailures = {};
 
 /**
  * Assert that the values match with the type specs.
@@ -3436,16 +3559,16 @@ function checkReactTypeSpec(typeSpecs, values, location, componentName, element,
       try {
         // This is intentionally an invariant that gets caught. It's the same
         // behavior as without this statement except with a better message.
-        !(typeof typeSpecs[typeSpecName] === 'function') ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, '%s: %s type `%s` is invalid; it must be a function, usually from React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName) : reactProdInvariant_1('84', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName) : void 0;
-        error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret_1$1);
+        !(typeof typeSpecs[typeSpecName] === 'function') ? process.env.NODE_ENV !== 'production' ? invariant_1(false, '%s: %s type `%s` is invalid; it must be a function, usually from React.PropTypes.', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName) : reactProdInvariant_1('84', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName) : void 0;
+        error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret_1);
       } catch (ex) {
         error = ex;
       }
-      process.env.NODE_ENV !== 'production' ? warning_1$1(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName, typeof error) : void 0;
-      if (error instanceof Error && !(error.message in loggedTypeFailures$1)) {
+      process.env.NODE_ENV !== 'production' ? warning_1(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', ReactPropTypeLocationNames_1[location], typeSpecName, typeof error) : void 0;
+      if (error instanceof Error && !(error.message in loggedTypeFailures)) {
         // Only monitor this failure once because there tends to be a lot of the
         // same error.
-        loggedTypeFailures$1[error.message] = true;
+        loggedTypeFailures[error.message] = true;
 
         var componentStackInfo = '';
 
@@ -3460,7 +3583,7 @@ function checkReactTypeSpec(typeSpecs, values, location, componentName, element,
           }
         }
 
-        process.env.NODE_ENV !== 'production' ? warning_1$1(false, 'Failed %s type: %s%s', location, error.message, componentStackInfo) : void 0;
+        process.env.NODE_ENV !== 'production' ? warning_1(false, 'Failed %s type: %s%s', location, error.message, componentStackInfo) : void 0;
       }
     }
   }
@@ -3541,7 +3664,7 @@ function validateExplicitKey(element, parentType) {
     childOwner = ' It was passed a child from ' + element._owner.getName() + '.';
   }
 
-  process.env.NODE_ENV !== 'production' ? warning_1$1(false, 'Each child in an array or iterator should have a unique "key" prop.' + '%s%s See https://fb.me/react-warning-keys for more information.%s', currentComponentErrorInfo, childOwner, ReactComponentTreeHook_1.getCurrentStackAddendum(element)) : void 0;
+  process.env.NODE_ENV !== 'production' ? warning_1(false, 'Each child in an array or iterator should have a unique "key" prop.' + '%s%s See https://fb.me/react-warning-keys for more information.%s', currentComponentErrorInfo, childOwner, ReactComponentTreeHook_1.getCurrentStackAddendum(element)) : void 0;
 }
 
 /**
@@ -3602,7 +3725,7 @@ function validatePropTypes(element) {
     checkReactTypeSpec_1(componentClass.propTypes, element.props, 'prop', name, element, null);
   }
   if (typeof componentClass.getDefaultProps === 'function') {
-    process.env.NODE_ENV !== 'production' ? warning_1$1(componentClass.getDefaultProps.isReactClassApproved, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : void 0;
+    process.env.NODE_ENV !== 'production' ? warning_1(componentClass.getDefaultProps.isReactClassApproved, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : void 0;
   }
 }
 
@@ -3629,7 +3752,7 @@ var ReactElementValidator$2 = {
 
         var currentSource = props !== null && props !== undefined && props.__source !== undefined ? props.__source : null;
         ReactComponentTreeHook_1.pushNonStandardWarningStack(true, currentSource);
-        process.env.NODE_ENV !== 'production' ? warning_1$1(false, 'React.createElement: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', type == null ? type : typeof type, info) : void 0;
+        process.env.NODE_ENV !== 'production' ? warning_1(false, 'React.createElement: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', type == null ? type : typeof type, info) : void 0;
         ReactComponentTreeHook_1.popNonStandardWarningStack();
       }
     }
@@ -3857,15 +3980,15 @@ var ReactDOMFactories_1 = ReactDOMFactories;
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-var ReactPropTypesSecret$3 = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+var ReactPropTypesSecret$2 = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
-var ReactPropTypesSecret_1$3 = ReactPropTypesSecret$3;
+var ReactPropTypesSecret_1$2 = ReactPropTypesSecret$2;
 
 if (process.env.NODE_ENV !== 'production') {
-  var invariant$3 = invariant_1$1;
-  var warning$2$1 = warning_1$1;
-  var ReactPropTypesSecret$4 = ReactPropTypesSecret_1$3;
-  var loggedTypeFailures$2 = {};
+  var invariant$2 = invariant_1;
+  var warning$1 = warning_1;
+  var ReactPropTypesSecret$3 = ReactPropTypesSecret_1$2;
+  var loggedTypeFailures$1 = {};
 }
 
 /**
@@ -3879,7 +4002,7 @@ if (process.env.NODE_ENV !== 'production') {
  * @param {?Function} getStack Returns the component stack.
  * @private
  */
-function checkPropTypes$1$1(typeSpecs, values, location, componentName, getStack) {
+function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
   if (process.env.NODE_ENV !== 'production') {
     for (var typeSpecName in typeSpecs) {
       if (typeSpecs.hasOwnProperty(typeSpecName)) {
@@ -3890,29 +4013,29 @@ function checkPropTypes$1$1(typeSpecs, values, location, componentName, getStack
         try {
           // This is intentionally an invariant that gets caught. It's the same
           // behavior as without this statement except with a better message.
-          invariant$3(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret$4);
+          invariant$2(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
+          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret$3);
         } catch (ex) {
           error = ex;
         }
-        warning$2$1(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
-        if (error instanceof Error && !(error.message in loggedTypeFailures$2)) {
+        warning$1(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error);
+        if (error instanceof Error && !(error.message in loggedTypeFailures$1)) {
           // Only monitor this failure once because there tends to be a lot of the
           // same error.
-          loggedTypeFailures$2[error.message] = true;
+          loggedTypeFailures$1[error.message] = true;
 
           var stack = getStack ? getStack() : '';
 
-          warning$2$1(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
+          warning$1(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
         }
       }
     }
   }
 }
 
-var checkPropTypes_1$1 = checkPropTypes$1$1;
+var checkPropTypes_1 = checkPropTypes;
 
-var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
+var factoryWithTypeCheckers = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
   var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
   var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
@@ -4050,10 +4173,10 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
       componentName = componentName || ANONYMOUS;
       propFullName = propFullName || propName;
 
-      if (secret !== ReactPropTypesSecret_1$3) {
+      if (secret !== ReactPropTypesSecret_1$2) {
         if (throwOnDirectAccess) {
           // New behavior only for users of `prop-types` package
-          invariant_1$1(
+          invariant_1(
             false,
             'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
             'Use `PropTypes.checkPropTypes()` to call them. ' +
@@ -4067,7 +4190,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
             // Avoid spamming the console because they are often not actionable except for lib authors
             manualPropTypeWarningCount < 3
           ) {
-            warning_1$1(
+            warning_1(
               false,
               'You are manually calling a React.PropTypes validation ' +
               'function for the `%s` prop on `%s`. This is deprecated ' +
@@ -4119,7 +4242,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
   }
 
   function createAnyTypeChecker() {
-    return createChainableTypeChecker(emptyFunction_1$1.thatReturnsNull);
+    return createChainableTypeChecker(emptyFunction_1.thatReturnsNull);
   }
 
   function createArrayOfTypeChecker(typeChecker) {
@@ -4133,7 +4256,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
         return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
       }
       for (var i = 0; i < propValue.length; i++) {
-        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret_1$3);
+        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret_1$2);
         if (error instanceof Error) {
           return error;
         }
@@ -4169,8 +4292,8 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
 
   function createEnumTypeChecker(expectedValues) {
     if (!Array.isArray(expectedValues)) {
-      process.env.NODE_ENV !== 'production' ? warning_1$1(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
-      return emptyFunction_1$1.thatReturnsNull;
+      process.env.NODE_ENV !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOf, expected an instance of array.') : void 0;
+      return emptyFunction_1.thatReturnsNull;
     }
 
     function validate(props, propName, componentName, location, propFullName) {
@@ -4199,7 +4322,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
       }
       for (var key in propValue) {
         if (propValue.hasOwnProperty(key)) {
-          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1$3);
+          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1$2);
           if (error instanceof Error) {
             return error;
           }
@@ -4212,28 +4335,28 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
 
   function createUnionTypeChecker(arrayOfTypeCheckers) {
     if (!Array.isArray(arrayOfTypeCheckers)) {
-      process.env.NODE_ENV !== 'production' ? warning_1$1(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
-      return emptyFunction_1$1.thatReturnsNull;
+      process.env.NODE_ENV !== 'production' ? warning_1(false, 'Invalid argument supplied to oneOfType, expected an instance of array.') : void 0;
+      return emptyFunction_1.thatReturnsNull;
     }
 
     for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
       var checker = arrayOfTypeCheckers[i];
       if (typeof checker !== 'function') {
-        warning_1$1(
+        warning_1(
           false,
           'Invalid argument supplid to oneOfType. Expected an array of check functions, but ' +
           'received %s at index %s.',
           getPostfixForTypeWarning(checker),
           i
         );
-        return emptyFunction_1$1.thatReturnsNull;
+        return emptyFunction_1.thatReturnsNull;
       }
     }
 
     function validate(props, propName, componentName, location, propFullName) {
       for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
         var checker = arrayOfTypeCheckers[i];
-        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret_1$3) == null) {
+        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret_1$2) == null) {
           return null;
         }
       }
@@ -4265,7 +4388,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
         if (!checker) {
           continue;
         }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1$3);
+        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret_1$2);
         if (error) {
           return error;
         }
@@ -4401,7 +4524,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
     return propValue.constructor.name;
   }
 
-  ReactPropTypes.checkPropTypes = checkPropTypes_1$1;
+  ReactPropTypes.checkPropTypes = checkPropTypes_1;
   ReactPropTypes.PropTypes = ReactPropTypes;
 
   return ReactPropTypes;
@@ -4415,7 +4538,7 @@ var factoryWithTypeCheckers$1 = function(isValidElement, throwOnDirectAccess) {
 var factory_1 = function(isValidElement) {
   // It is still allowed in 15.5.
   var throwOnDirectAccess = false;
-  return factoryWithTypeCheckers$1(isValidElement, throwOnDirectAccess);
+  return factoryWithTypeCheckers(isValidElement, throwOnDirectAccess);
 };
 
 var isValidElement = ReactElement_1.isValidElement;
@@ -4437,7 +4560,7 @@ var ReactPropTypes = factory_1(isValidElement);
 var ReactVersion = '15.6.1';
 
 if (process.env.NODE_ENV !== 'production') {
-  var warning$3 = warning_1$1;
+  var warning$2 = warning_1;
 }
 
 var MIXINS_KEY = 'mixins';
@@ -4459,7 +4582,7 @@ if (process.env.NODE_ENV !== 'production') {
   ReactPropTypeLocationNames$2 = {};
 }
 
-function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
+function factory$1(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   /**
    * Policies that describe methods in `ReactClassInterface`.
    */
@@ -4732,7 +4855,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       if (process.env.NODE_ENV !== 'production') {
         validateTypeDef(Constructor, childContextTypes, 'childContext');
       }
-      Constructor.childContextTypes = index$1$1(
+      Constructor.childContextTypes = index$3(
         {},
         Constructor.childContextTypes,
         childContextTypes
@@ -4742,7 +4865,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       if (process.env.NODE_ENV !== 'production') {
         validateTypeDef(Constructor, contextTypes, 'context');
       }
-      Constructor.contextTypes = index$1$1(
+      Constructor.contextTypes = index$3(
         {},
         Constructor.contextTypes,
         contextTypes
@@ -4766,7 +4889,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       if (process.env.NODE_ENV !== 'production') {
         validateTypeDef(Constructor, propTypes, 'prop');
       }
-      Constructor.propTypes = index$1$1({}, Constructor.propTypes, propTypes);
+      Constructor.propTypes = index$3({}, Constructor.propTypes, propTypes);
     },
     statics: function(Constructor, statics) {
       mixStaticSpecIntoComponent(Constructor, statics);
@@ -4780,7 +4903,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
         // use a warning instead of an _invariant so components
         // don't show up in prod but only in __DEV__
         if (process.env.NODE_ENV !== 'production') {
-          warning$3(
+          warning$2(
             typeof typeDef[propName] === 'function',
             '%s: %s type `%s` is invalid; it must be a function, usually from ' +
               'React.PropTypes.',
@@ -4800,7 +4923,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
     // Disallow overriding of base class methods unless explicitly allowed.
     if (ReactClassMixin.hasOwnProperty(name)) {
-      invariant_1$1(
+      invariant_1(
         specPolicy === 'OVERRIDE_BASE',
         'ReactClassInterface: You are attempting to override ' +
           '`%s` from your class specification. Ensure that your method names ' +
@@ -4811,7 +4934,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 
     // Disallow defining methods more than once unless explicitly allowed.
     if (isAlreadyDefined) {
-      invariant_1$1(
+      invariant_1(
         specPolicy === 'DEFINE_MANY' || specPolicy === 'DEFINE_MANY_MERGED',
         'ReactClassInterface: You are attempting to define ' +
           '`%s` on your component more than once. This conflict may be due ' +
@@ -4832,7 +4955,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
         var isMixinValid = typeofSpec === 'object' && spec !== null;
 
         if (process.env.NODE_ENV !== 'production') {
-          warning$3(
+          warning$2(
             isMixinValid,
             "%s: You're attempting to include a mixin that is either null " +
               'or not an object. Check the mixins included by the component, ' +
@@ -4847,13 +4970,13 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       return;
     }
 
-    invariant_1$1(
+    invariant_1(
       typeof spec !== 'function',
       "ReactClass: You're attempting to " +
         'use a component class or function as a mixin. Instead, just use a ' +
         'regular object.'
     );
-    invariant_1$1(
+    invariant_1(
       !isValidElement(spec),
       "ReactClass: You're attempting to " +
         'use a component as a mixin. Instead, just use a regular object.'
@@ -4906,7 +5029,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
             var specPolicy = ReactClassInterface[name];
 
             // These cases should already be caught by validateMethodOverride.
-            invariant_1$1(
+            invariant_1(
               isReactClassMethod &&
                 (specPolicy === 'DEFINE_MANY_MERGED' ||
                   specPolicy === 'DEFINE_MANY'),
@@ -4949,7 +5072,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       }
 
       var isReserved = name in RESERVED_SPEC_KEYS;
-      invariant_1$1(
+      invariant_1(
         !isReserved,
         'ReactClass: You are attempting to define a reserved ' +
           'property, `%s`, that shouldn\'t be on the "statics" key. Define it ' +
@@ -4959,7 +5082,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       );
 
       var isInherited = name in Constructor;
-      invariant_1$1(
+      invariant_1(
         !isInherited,
         'ReactClass: You are attempting to define ' +
           '`%s` on your component more than once. This conflict may be ' +
@@ -4978,14 +5101,14 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
    * @return {object} one after it has been mutated to contain everything in two.
    */
   function mergeIntoWithNoDuplicateKeys(one, two) {
-    invariant_1$1(
+    invariant_1(
       one && two && typeof one === 'object' && typeof two === 'object',
       'mergeIntoWithNoDuplicateKeys(): Cannot merge non-objects.'
     );
 
     for (var key in two) {
       if (two.hasOwnProperty(key)) {
-        invariant_1$1(
+        invariant_1(
           one[key] === undefined,
           'mergeIntoWithNoDuplicateKeys(): ' +
             'Tried to merge two objects with the same key: `%s`. This conflict ' +
@@ -5070,7 +5193,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
         // let's warn.
         if (newThis !== component && newThis !== null) {
           if (process.env.NODE_ENV !== 'production') {
-            warning$3(
+            warning$2(
               false,
               'bind(): React component methods may only be bound to the ' +
                 'component instance. See %s',
@@ -5079,7 +5202,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
           }
         } else if (!args.length) {
           if (process.env.NODE_ENV !== 'production') {
-            warning$3(
+            warning$2(
               false,
               'bind(): You are binding a component method to the component. ' +
                 'React does this for you automatically in a high-performance ' +
@@ -5146,7 +5269,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
      */
     isMounted: function() {
       if (process.env.NODE_ENV !== 'production') {
-        warning$3(
+        warning$2(
           this.__didWarnIsMounted,
           '%s: isMounted is deprecated. Instead, make sure to clean up ' +
             'subscriptions and pending requests in componentWillUnmount to ' +
@@ -5162,7 +5285,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   };
 
   var ReactClassComponent = function() {};
-  index$1$1(
+  index$3(
     ReactClassComponent.prototype,
     ReactComponent.prototype,
     ReactClassMixin
@@ -5185,7 +5308,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       // by mocks to assert on what gets mounted.
 
       if (process.env.NODE_ENV !== 'production') {
-        warning$3(
+        warning$2(
           this instanceof Constructor,
           'Something is calling a React component directly. Use a factory or ' +
             'JSX instead. See: https://fb.me/react-legacyfactory'
@@ -5219,7 +5342,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
           initialState = null;
         }
       }
-      invariant_1$1(
+      invariant_1(
         typeof initialState === 'object' && !Array.isArray(initialState),
         '%s.getInitialState(): must return an object or null',
         Constructor.displayName || 'ReactCompositeComponent'
@@ -5255,13 +5378,13 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
       }
     }
 
-    invariant_1$1(
+    invariant_1(
       Constructor.prototype.render,
       'createClass(...): Class specification must implement a `render` method.'
     );
 
     if (process.env.NODE_ENV !== 'production') {
-      warning$3(
+      warning$2(
         !Constructor.prototype.componentShouldUpdate,
         '%s has a method called ' +
           'componentShouldUpdate(). Did you mean shouldComponentUpdate()? ' +
@@ -5269,7 +5392,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
           'expected to return a value.',
         spec.displayName || 'A component'
       );
-      warning$3(
+      warning$2(
         !Constructor.prototype.componentWillRecieveProps,
         '%s has a method called ' +
           'componentWillRecieveProps(). Did you mean componentWillReceiveProps()?',
@@ -5290,7 +5413,7 @@ function factory$2(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   return createClass;
 }
 
-var factory_1$2 = factory$2;
+var factory_1$2 = factory$1;
 
 var Component = ReactBaseClasses.Component;
 
@@ -5316,7 +5439,7 @@ var createClass$2 = factory_1$2(Component, isValidElement$1, ReactNoopUpdateQueu
  * structure.
  */
 function onlyChild(children) {
-  !ReactElement_1.isValidElement(children) ? process.env.NODE_ENV !== 'production' ? invariant_1$1(false, 'React.Children.only expected to receive a single React element child.') : reactProdInvariant_1('143') : void 0;
+  !ReactElement_1.isValidElement(children) ? process.env.NODE_ENV !== 'production' ? invariant_1(false, 'React.Children.only expected to receive a single React element child.') : reactProdInvariant_1('143') : void 0;
   return children;
 }
 
@@ -5336,7 +5459,7 @@ if (process.env.NODE_ENV !== 'production') {
   cloneElement = ReactElementValidator.cloneElement;
 }
 
-var __spread = index$1$1;
+var __spread = index$3;
 var createMixin = function (mixin) {
   return mixin;
 };
@@ -5347,7 +5470,7 @@ if (process.env.NODE_ENV !== 'production') {
   __spread = function () {
     lowPriorityWarning(warnedForSpread, 'React.__spread is deprecated and should not be used. Use ' + 'Object.assign directly or another helper function with similar ' + 'semantics. You may be seeing this warning due to your compiler. ' + 'See https://fb.me/react-spread-deprecation for more details.');
     warnedForSpread = true;
-    return index$1$1.apply(null, arguments);
+    return index$3.apply(null, arguments);
   };
 
   createMixin = function (mixin) {
@@ -5435,6 +5558,105 @@ var react = React_1;
 var react_1 = react.Component;
 var react_2 = react.createElement;
 
+var factoryWithThrowingShims = function() {
+  function shim(props, propName, componentName, location, propFullName, secret) {
+    if (secret === ReactPropTypesSecret_1$2) {
+      // It is still safe when called from React.
+      return;
+    }
+    invariant_1(
+      false,
+      'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+      'Use PropTypes.checkPropTypes() to call them. ' +
+      'Read more at http://fb.me/use-check-prop-types'
+    );
+  }
+  shim.isRequired = shim;
+  function getShim() {
+    return shim;
+  }
+  // Important!
+  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
+  var ReactPropTypes = {
+    array: shim,
+    bool: shim,
+    func: shim,
+    number: shim,
+    object: shim,
+    string: shim,
+    symbol: shim,
+
+    any: shim,
+    arrayOf: getShim,
+    element: shim,
+    instanceOf: getShim,
+    node: shim,
+    objectOf: getShim,
+    oneOf: getShim,
+    oneOfType: getShim,
+    shape: getShim
+  };
+
+  ReactPropTypes.checkPropTypes = emptyFunction_1;
+  ReactPropTypes.PropTypes = ReactPropTypes;
+
+  return ReactPropTypes;
+};
+
+var index$5 = createCommonjsModule(function (module) {
+/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+if (process.env.NODE_ENV !== 'production') {
+  var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+    Symbol.for &&
+    Symbol.for('react.element')) ||
+    0xeac7;
+
+  var isValidElement = function(object) {
+    return typeof object === 'object' &&
+      object !== null &&
+      object.$$typeof === REACT_ELEMENT_TYPE;
+  };
+
+  // By explicitly using `prop-types` you are opting into new development behavior.
+  // http://fb.me/prop-types-in-prod
+  var throwOnDirectAccess = true;
+  module.exports = factoryWithTypeCheckers(isValidElement, throwOnDirectAccess);
+} else {
+  // By explicitly using `prop-types` you are opting into new production behavior.
+  // http://fb.me/prop-types-in-prod
+  module.exports = factoryWithThrowingShims();
+}
+});
+
+var index$6 = isFunction;
+
+var toString = Object.prototype.toString;
+
+function isFunction (fn) {
+  var string = toString.call(fn);
+  return string === '[object Function]' ||
+    (typeof fn === 'function' && string !== '[object RegExp]') ||
+    (typeof window !== 'undefined' &&
+     // IE8 and below
+     (fn === window.setTimeout ||
+      fn === window.alert ||
+      fn === window.confirm ||
+      fn === window.prompt))
+}
+
+/**
+ * Copyright 2015, Yahoo! Inc.
+ * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
+ */
+
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -5492,21 +5714,108 @@ function hyphenateStyleName(string) {
 
 var hyphenateStyleName_1 = hyphenateStyleName;
 
-var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+//      
+var objToCss = function objToCss(obj, prevKey) {
+  var css = Object.keys(obj).map(function (key) {
+    if (index(obj[key])) return objToCss(obj[key], key);
+    return hyphenateStyleName_1(key) + ': ' + obj[key] + ';';
+  }).join(' ');
+  return prevKey ? prevKey + ' {\n  ' + css + '\n}' : css;
 };
 
+var flatten = function flatten(chunks, executionContext) {
+  return chunks.reduce(function (ruleSet, chunk) {
+    /* Remove falsey values */
+    if (chunk === undefined || chunk === null || chunk === false || chunk === '') return ruleSet;
+    /* Flatten ruleSet */
+    if (Array.isArray(chunk)) return [].concat(ruleSet, flatten(chunk, executionContext));
+
+    /* Handle other components */
+    // $FlowFixMe not sure how to make this pass
+    if (chunk.hasOwnProperty('styledComponentId')) return [].concat(ruleSet, ['.' + chunk.styledComponentId]);
+
+    /* Either execute or defer the function */
+    if (typeof chunk === 'function') {
+      return executionContext ? ruleSet.concat.apply(ruleSet, flatten([chunk(executionContext)], executionContext)) : ruleSet.concat(chunk);
+    }
+
+    /* Handle objects */
+    // $FlowFixMe have to add %checks somehow to isPlainObject
+    return ruleSet.concat(index(chunk) ? objToCss(chunk) : chunk.toString());
+  }, []);
+};
+
+//      
+var stylis = new stylis$1({
+  global: false,
+  cascade: true,
+  keyframe: false,
+  prefix: true,
+  compress: false,
+  semicolon: true
+});
+
+var stringifyRules = function stringifyRules(rules, selector, prefix) {
+  var flatCSS = rules.join('').replace(/^\s*\/\/.*$/gm, ''); // replace JS comments
+
+  var cssStr = selector && prefix ? prefix + ' ' + selector + ' { ' + flatCSS + ' }' : flatCSS;
+
+  return stylis(prefix || !selector ? '' : selector, cssStr);
+};
+
+//      
+var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+var charsLength = chars.length;
+
+/* Some high number, usually 9-digit base-10. Map it to base-😎 */
+var generateAlphabeticName = function generateAlphabeticName(code) {
+  var name = '';
+  var x = void 0;
+
+  for (x = code; x > charsLength; x = Math.floor(x / chars.length)) {
+    name = chars[x % charsLength] + name;
+  }
+
+  return chars[x % charsLength] + name;
+};
+
+//      
 
 
+var interleave = (function (strings, interpolations) {
+  return interpolations.reduce(function (array, interp, i) {
+    return array.concat(interp, strings[i + 1]);
+  }, [strings[0]]);
+});
 
+//      
+var css = (function (strings) {
+  for (var _len = arguments.length, interpolations = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    interpolations[_key - 1] = arguments[_key];
+  }
 
+  return flatten(interleave(strings, interpolations));
+});
 
+//      
+var SC_COMPONENT_ID = /^[^\S\n]*?\/\* sc-component-id:\s+(\S+)\s+\*\//mg;
 
+var extractCompsFromCSS = (function (maybeCSS) {
+  var css = '' + (maybeCSS || ''); // Definitely a string, and a clone
+  var existingComponents = [];
+  css.replace(SC_COMPONENT_ID, function (match, componentId, matchIndex) {
+    existingComponents.push({ componentId: componentId, matchIndex: matchIndex });
+    return match;
+  });
+  return existingComponents.map(function (_ref, i) {
+    var componentId = _ref.componentId,
+        matchIndex = _ref.matchIndex;
 
-
-
+    var nextComp = existingComponents[i + 1];
+    var cssFromDOM = nextComp ? css.slice(matchIndex, nextComp.matchIndex) : css.slice(matchIndex);
+    return { componentId: componentId, cssFromDOM: cssFromDOM };
+  });
+});
 
 var classCallCheck$1 = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -5597,148 +5906,6 @@ var possibleConstructorReturn$1 = function (self, call) {
 
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
-
-/*!
- * isobject <https://github.com/jonschlinkert/isobject>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT License.
- */
-
-var index$1 = function isObject(val) {
-  return val != null && (typeof val === 'undefined' ? 'undefined' : _typeof$1(val)) === 'object' && !Array.isArray(val);
-};
-
-var isObject$1 = index$1;
-
-function isObjectObject(o) {
-  return isObject$1(o) === true && Object.prototype.toString.call(o) === '[object Object]';
-}
-
-var index = function isPlainObject(o) {
-  var ctor, prot;
-
-  if (isObjectObject(o) === false) return false;
-
-  // If has modified constructor
-  ctor = o.constructor;
-  if (typeof ctor !== 'function') return false;
-
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObjectObject(prot) === false) return false;
-
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-};
-
-//      
-var objToCss = function objToCss(obj, prevKey) {
-  var css = Object.keys(obj).map(function (key) {
-    if (index(obj[key])) return objToCss(obj[key], key);
-    return hyphenateStyleName_1(key) + ': ' + obj[key] + ';';
-  }).join(' ');
-  return prevKey ? prevKey + ' {\n  ' + css + '\n}' : css;
-};
-
-var flatten = function flatten(chunks, executionContext) {
-  return chunks.reduce(function (ruleSet, chunk) {
-    /* Remove falsey values */
-    if (chunk === undefined || chunk === null || chunk === false || chunk === '') return ruleSet;
-    /* Flatten ruleSet */
-    if (Array.isArray(chunk)) return [].concat(ruleSet, flatten(chunk, executionContext));
-
-    /* Handle other components */
-    // $FlowFixMe not sure how to make this pass
-    if (chunk.hasOwnProperty('styledComponentId')) return [].concat(ruleSet, ['.' + chunk.styledComponentId]);
-
-    /* Either execute or defer the function */
-    if (typeof chunk === 'function') {
-      return executionContext ? ruleSet.concat.apply(ruleSet, flatten([chunk(executionContext)], executionContext)) : ruleSet.concat(chunk);
-    }
-
-    /* Handle objects */
-    // $FlowFixMe have to add %checks somehow to isPlainObject
-    return ruleSet.concat(index(chunk) ? objToCss(chunk) : chunk.toString());
-  }, []);
-};
-
-//      
-stylis.set({
-  global: false,
-  cascade: true,
-  keyframe: false,
-  prefix: true,
-  compress: false,
-  semicolon: true
-});
-
-var stringifyRules = function stringifyRules(rules, selector, prefix) {
-  var flatCSS = rules.join('').replace(/^\s*\/\/.*$/gm, ''); // replace JS comments
-
-  var cssStr = selector && prefix ? prefix + ' ' + selector + ' { ' + flatCSS + ' }' : flatCSS;
-
-  return stylis(prefix || !selector ? '' : selector, cssStr);
-};
-
-//      
-var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-var charsLength = chars.length;
-
-/* Some high number, usually 9-digit base-10. Map it to base-😎 */
-var generateAlphabeticName = function generateAlphabeticName(code) {
-  var name = '';
-  var x = void 0;
-
-  for (x = code; x > charsLength; x = Math.floor(x / chars.length)) {
-    name = chars[x % charsLength] + name;
-  }
-
-  return chars[x % charsLength] + name;
-};
-
-//      
-
-
-var interleave = (function (strings, interpolations) {
-  return interpolations.reduce(function (array, interp, i) {
-    return array.concat(interp, strings[i + 1]);
-  }, [strings[0]]);
-});
-
-//      
-var css = (function (strings) {
-  for (var _len = arguments.length, interpolations = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    interpolations[_key - 1] = arguments[_key];
-  }
-
-  return flatten(interleave(strings, interpolations));
-});
-
-//      
-var SC_COMPONENT_ID = /^[^\S\n]*?\/\* sc-component-id:\s+(\S+)\s+\*\//mg;
-
-var extractCompsFromCSS = (function (maybeCSS) {
-  var css = '' + (maybeCSS || ''); // Definitely a string, and a clone
-  var existingComponents = [];
-  css.replace(SC_COMPONENT_ID, function (match, componentId, matchIndex) {
-    existingComponents.push({ componentId: componentId, matchIndex: matchIndex });
-    return match;
-  });
-  return existingComponents.map(function (_ref, i) {
-    var componentId = _ref.componentId,
-        matchIndex = _ref.matchIndex;
-
-    var nextComp = existingComponents[i + 1];
-    var cssFromDOM = nextComp ? css.slice(matchIndex, nextComp.matchIndex) : css.slice(matchIndex);
-    return { componentId: componentId, cssFromDOM: cssFromDOM };
-  });
-});
 
 //      
 /*
@@ -6043,702 +6210,12 @@ var StyleSheet = function () {
 
   createClass$1(StyleSheet, null, [{
     key: 'instance',
-    get: function get() {
+    get: function get$$1() {
       return instance || (instance = StyleSheet.create());
     }
   }]);
   return StyleSheet;
 }();
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction$1 = function emptyFunction$1() {};
-
-emptyFunction$1.thatReturns = makeEmptyFunction;
-emptyFunction$1.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction$1.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction$1.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction$1.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction$1.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-var emptyFunction_1 = emptyFunction$1;
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var validateFormat = function validateFormat(format) {};
-
-{
-  validateFormat = function validateFormat(format) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  };
-}
-
-function invariant$1(condition, format, a, b, c, d, e, f) {
-  validateFormat(format);
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(format.replace(/%s/g, function () {
-        return args[argIndex++];
-      }));
-      error.name = 'Invariant Violation';
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-}
-
-var invariant_1 = invariant$1;
-
-var emptyFunction$2 = emptyFunction_1;
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning$1 = emptyFunction$2;
-
-{
-  (function () {
-    var printWarning = function printWarning(format) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      var argIndex = 0;
-      var message = 'Warning: ' + format.replace(/%s/g, function () {
-        return args[argIndex++];
-      });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // --- Welcome to debugging React ---
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch (x) {}
-    };
-
-    warning$1 = function warning$1(condition, format) {
-      if (format === undefined) {
-        throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-      }
-
-      if (format.indexOf('Failed Composite propType: ') === 0) {
-        return; // Ignore CompositeComponent proptype check.
-      }
-
-      if (!condition) {
-        for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-          args[_key2 - 2] = arguments[_key2];
-        }
-
-        printWarning.apply(undefined, [format].concat(args));
-      }
-    };
-  })();
-}
-
-var warning_1 = warning$1;
-
-/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-var ReactPropTypesSecret$1 = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
-
-var ReactPropTypesSecret_1 = ReactPropTypesSecret$1;
-
-{
-  var invariant$2 = invariant_1;
-  var warning$2 = warning_1;
-  var ReactPropTypesSecret$2 = ReactPropTypesSecret_1;
-  var loggedTypeFailures = {};
-}
-
-/**
- * Assert that the values match with the type specs.
- * Error messages are memorized and will only be shown once.
- *
- * @param {object} typeSpecs Map of name to a ReactPropType
- * @param {object} values Runtime values that need to be type-checked
- * @param {string} location e.g. "prop", "context", "child context"
- * @param {string} componentName Name of the component for error messages.
- * @param {?Function} getStack Returns the component stack.
- * @private
- */
-function checkPropTypes$1(typeSpecs, values, location, componentName, getStack) {
-  {
-    for (var typeSpecName in typeSpecs) {
-      if (typeSpecs.hasOwnProperty(typeSpecName)) {
-        var error;
-        // Prop type validation may throw. In case they do, we don't want to
-        // fail the render phase where it didn't fail before. So we log it.
-        // After these have been cleaned up, we'll let them throw.
-        try {
-          // This is intentionally an invariant that gets caught. It's the same
-          // behavior as without this statement except with a better message.
-          invariant$2(typeof typeSpecs[typeSpecName] === 'function', '%s: %s type `%s` is invalid; it must be a function, usually from ' + 'React.PropTypes.', componentName || 'React class', location, typeSpecName);
-          error = typeSpecs[typeSpecName](values, typeSpecName, componentName, location, null, ReactPropTypesSecret$2);
-        } catch (ex) {
-          error = ex;
-        }
-        warning$2(!error || error instanceof Error, '%s: type specification of %s `%s` is invalid; the type checker ' + 'function must return `null` or an `Error` but returned a %s. ' + 'You may have forgotten to pass an argument to the type checker ' + 'creator (arrayOf, instanceOf, objectOf, oneOf, oneOfType, and ' + 'shape all require an argument).', componentName || 'React class', location, typeSpecName, typeof error === 'undefined' ? 'undefined' : _typeof$1(error));
-        if (error instanceof Error && !(error.message in loggedTypeFailures)) {
-          // Only monitor this failure once because there tends to be a lot of the
-          // same error.
-          loggedTypeFailures[error.message] = true;
-
-          var stack = getStack ? getStack() : '';
-
-          warning$2(false, 'Failed %s type: %s%s', location, error.message, stack != null ? stack : '');
-        }
-      }
-    }
-  }
-}
-
-var checkPropTypes_1 = checkPropTypes$1;
-
-var emptyFunction = emptyFunction_1;
-var invariant = invariant_1;
-var warning = warning_1;
-
-var ReactPropTypesSecret = ReactPropTypesSecret_1;
-var checkPropTypes = checkPropTypes_1;
-
-var factoryWithTypeCheckers = function factoryWithTypeCheckers(isValidElement, throwOnDirectAccess) {
-  /* global Symbol */
-  var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-  var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
-
-  /**
-   * Returns the iterator method function contained on the iterable object.
-   *
-   * Be sure to invoke the function with the iterable as context:
-   *
-   *     var iteratorFn = getIteratorFn(myIterable);
-   *     if (iteratorFn) {
-   *       var iterator = iteratorFn.call(myIterable);
-   *       ...
-   *     }
-   *
-   * @param {?object} maybeIterable
-   * @return {?function}
-   */
-  function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if (typeof iteratorFn === 'function') {
-      return iteratorFn;
-    }
-  }
-
-  /**
-   * Collection of methods that allow declaration and validation of props that are
-   * supplied to React components. Example usage:
-   *
-   *   var Props = require('ReactPropTypes');
-   *   var MyArticle = React.createClass({
-   *     propTypes: {
-   *       // An optional string prop named "description".
-   *       description: Props.string,
-   *
-   *       // A required enum prop named "category".
-   *       category: Props.oneOf(['News','Photos']).isRequired,
-   *
-   *       // A prop named "dialog" that requires an instance of Dialog.
-   *       dialog: Props.instanceOf(Dialog).isRequired
-   *     },
-   *     render: function() { ... }
-   *   });
-   *
-   * A more formal specification of how these methods are used:
-   *
-   *   type := array|bool|func|object|number|string|oneOf([...])|instanceOf(...)
-   *   decl := ReactPropTypes.{type}(.isRequired)?
-   *
-   * Each and every declaration produces a function with the same signature. This
-   * allows the creation of custom validation functions. For example:
-   *
-   *  var MyLink = React.createClass({
-   *    propTypes: {
-   *      // An optional string or URI prop named "href".
-   *      href: function(props, propName, componentName) {
-   *        var propValue = props[propName];
-   *        if (propValue != null && typeof propValue !== 'string' &&
-   *            !(propValue instanceof URI)) {
-   *          return new Error(
-   *            'Expected a string or an URI for ' + propName + ' in ' +
-   *            componentName
-   *          );
-   *        }
-   *      }
-   *    },
-   *    render: function() {...}
-   *  });
-   *
-   * @internal
-   */
-
-  var ANONYMOUS = '<<anonymous>>';
-
-  // Important!
-  // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
-  var ReactPropTypes = {
-    array: createPrimitiveTypeChecker('array'),
-    bool: createPrimitiveTypeChecker('boolean'),
-    func: createPrimitiveTypeChecker('function'),
-    number: createPrimitiveTypeChecker('number'),
-    object: createPrimitiveTypeChecker('object'),
-    string: createPrimitiveTypeChecker('string'),
-    symbol: createPrimitiveTypeChecker('symbol'),
-
-    any: createAnyTypeChecker(),
-    arrayOf: createArrayOfTypeChecker,
-    element: createElementTypeChecker(),
-    instanceOf: createInstanceTypeChecker,
-    node: createNodeChecker(),
-    objectOf: createObjectOfTypeChecker,
-    oneOf: createEnumTypeChecker,
-    oneOfType: createUnionTypeChecker,
-    shape: createShapeTypeChecker
-  };
-
-  /**
-   * inlined Object.is polyfill to avoid requiring consumers ship their own
-   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-   */
-  /*eslint-disable no-self-compare*/
-  function is(x, y) {
-    // SameValue algorithm
-    if (x === y) {
-      // Steps 1-5, 7-10
-      // Steps 6.b-6.e: +0 != -0
-      return x !== 0 || 1 / x === 1 / y;
-    } else {
-      // Step 6.a: NaN == NaN
-      return x !== x && y !== y;
-    }
-  }
-  /*eslint-enable no-self-compare*/
-
-  /**
-   * We use an Error-like object for backward compatibility as people may call
-   * PropTypes directly and inspect their output. However, we don't use real
-   * Errors anymore. We don't inspect their stack anyway, and creating them
-   * is prohibitively expensive if they are created too often, such as what
-   * happens in oneOfType() for any type before the one that matched.
-   */
-  function PropTypeError(message) {
-    this.message = message;
-    this.stack = '';
-  }
-  // Make `instanceof Error` still work for returned errors.
-  PropTypeError.prototype = Error.prototype;
-
-  function createChainableTypeChecker(validate) {
-    {
-      var manualPropTypeCallCache = {};
-      var manualPropTypeWarningCount = 0;
-    }
-    function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
-      componentName = componentName || ANONYMOUS;
-      propFullName = propFullName || propName;
-
-      if (secret !== ReactPropTypesSecret) {
-        if (throwOnDirectAccess) {
-          // New behavior only for users of `prop-types` package
-          invariant(false, 'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use `PropTypes.checkPropTypes()` to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
-        } else if ("development" !== 'production' && typeof console !== 'undefined') {
-          // Old behavior for people using React.PropTypes
-          var cacheKey = componentName + ':' + propName;
-          if (!manualPropTypeCallCache[cacheKey] &&
-          // Avoid spamming the console because they are often not actionable except for lib authors
-          manualPropTypeWarningCount < 3) {
-            warning(false, 'You are manually calling a React.PropTypes validation ' + 'function for the `%s` prop on `%s`. This is deprecated ' + 'and will throw in the standalone `prop-types` package. ' + 'You may be seeing this warning due to a third-party PropTypes ' + 'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.', propFullName, componentName);
-            manualPropTypeCallCache[cacheKey] = true;
-            manualPropTypeWarningCount++;
-          }
-        }
-      }
-      if (props[propName] == null) {
-        if (isRequired) {
-          if (props[propName] === null) {
-            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
-          }
-          return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
-        }
-        return null;
-      } else {
-        return validate(props, propName, componentName, location, propFullName);
-      }
-    }
-
-    var chainedCheckType = checkType.bind(null, false);
-    chainedCheckType.isRequired = checkType.bind(null, true);
-
-    return chainedCheckType;
-  }
-
-  function createPrimitiveTypeChecker(expectedType) {
-    function validate(props, propName, componentName, location, propFullName, secret) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== expectedType) {
-        // `propValue` being instance of, say, date/regexp, pass the 'object'
-        // check, but we can offer a more precise error message here rather than
-        // 'of type `object`'.
-        var preciseType = getPreciseType(propValue);
-
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createAnyTypeChecker() {
-    return createChainableTypeChecker(emptyFunction.thatReturnsNull);
-  }
-
-  function createArrayOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
-      }
-      var propValue = props[propName];
-      if (!Array.isArray(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
-      }
-      for (var i = 0; i < propValue.length; i++) {
-        var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
-        if (error instanceof Error) {
-          return error;
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createElementTypeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      if (!isValidElement(propValue)) {
-        var propType = getPropType(propValue);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createInstanceTypeChecker(expectedClass) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!(props[propName] instanceof expectedClass)) {
-        var expectedClassName = expectedClass.name || ANONYMOUS;
-        var actualClassName = getClassName(props[propName]);
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createEnumTypeChecker(expectedValues) {
-    if (!Array.isArray(expectedValues)) {
-      warning(false, 'Invalid argument supplied to oneOf, expected an instance of array.');
-      return emptyFunction.thatReturnsNull;
-    }
-
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      for (var i = 0; i < expectedValues.length; i++) {
-        if (is(propValue, expectedValues[i])) {
-          return null;
-        }
-      }
-
-      var valuesString = JSON.stringify(expectedValues);
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + propValue + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createObjectOfTypeChecker(typeChecker) {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (typeof typeChecker !== 'function') {
-        return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
-      }
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
-      }
-      for (var key in propValue) {
-        if (propValue.hasOwnProperty(key)) {
-          var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-          if (error instanceof Error) {
-            return error;
-          }
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createUnionTypeChecker(arrayOfTypeCheckers) {
-    if (!Array.isArray(arrayOfTypeCheckers)) {
-      warning(false, 'Invalid argument supplied to oneOfType, expected an instance of array.');
-      return emptyFunction.thatReturnsNull;
-    }
-
-    function validate(props, propName, componentName, location, propFullName) {
-      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
-        var checker = arrayOfTypeCheckers[i];
-        if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret) == null) {
-          return null;
-        }
-      }
-
-      return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createNodeChecker() {
-    function validate(props, propName, componentName, location, propFullName) {
-      if (!isNode(props[propName])) {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function createShapeTypeChecker(shapeTypes) {
-    function validate(props, propName, componentName, location, propFullName) {
-      var propValue = props[propName];
-      var propType = getPropType(propValue);
-      if (propType !== 'object') {
-        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
-      }
-      for (var key in shapeTypes) {
-        var checker = shapeTypes[key];
-        if (!checker) {
-          continue;
-        }
-        var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
-        if (error) {
-          return error;
-        }
-      }
-      return null;
-    }
-    return createChainableTypeChecker(validate);
-  }
-
-  function isNode(propValue) {
-    switch (typeof propValue === 'undefined' ? 'undefined' : _typeof$1(propValue)) {
-      case 'number':
-      case 'string':
-      case 'undefined':
-        return true;
-      case 'boolean':
-        return !propValue;
-      case 'object':
-        if (Array.isArray(propValue)) {
-          return propValue.every(isNode);
-        }
-        if (propValue === null || isValidElement(propValue)) {
-          return true;
-        }
-
-        var iteratorFn = getIteratorFn(propValue);
-        if (iteratorFn) {
-          var iterator = iteratorFn.call(propValue);
-          var step;
-          if (iteratorFn !== propValue.entries) {
-            while (!(step = iterator.next()).done) {
-              if (!isNode(step.value)) {
-                return false;
-              }
-            }
-          } else {
-            // Iterator will provide entry [k,v] tuples rather than values.
-            while (!(step = iterator.next()).done) {
-              var entry = step.value;
-              if (entry) {
-                if (!isNode(entry[1])) {
-                  return false;
-                }
-              }
-            }
-          }
-        } else {
-          return false;
-        }
-
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  function isSymbol(propType, propValue) {
-    // Native Symbol.
-    if (propType === 'symbol') {
-      return true;
-    }
-
-    // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
-    if (propValue['@@toStringTag'] === 'Symbol') {
-      return true;
-    }
-
-    // Fallback for non-spec compliant Symbols which are polyfilled.
-    if (typeof Symbol === 'function' && propValue instanceof Symbol) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // Equivalent of `typeof` but with special handling for array and regexp.
-  function getPropType(propValue) {
-    var propType = typeof propValue === 'undefined' ? 'undefined' : _typeof$1(propValue);
-    if (Array.isArray(propValue)) {
-      return 'array';
-    }
-    if (propValue instanceof RegExp) {
-      // Old webkits (at least until Android 4.0) return 'function' rather than
-      // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
-      // passes PropTypes.object.
-      return 'object';
-    }
-    if (isSymbol(propType, propValue)) {
-      return 'symbol';
-    }
-    return propType;
-  }
-
-  // This handles more types than `getPropType`. Only used for error messages.
-  // See `createPrimitiveTypeChecker`.
-  function getPreciseType(propValue) {
-    var propType = getPropType(propValue);
-    if (propType === 'object') {
-      if (propValue instanceof Date) {
-        return 'date';
-      } else if (propValue instanceof RegExp) {
-        return 'regexp';
-      }
-    }
-    return propType;
-  }
-
-  // Returns class name of the object, if any.
-  function getClassName(propValue) {
-    if (!propValue.constructor || !propValue.constructor.name) {
-      return ANONYMOUS;
-    }
-    return propValue.constructor.name;
-  }
-
-  ReactPropTypes.checkPropTypes = checkPropTypes;
-  ReactPropTypes.PropTypes = ReactPropTypes;
-
-  return ReactPropTypes;
-};
-
-var index$3 = createCommonjsModule(function (module) {
-  /**
-   * Copyright 2013-present, Facebook, Inc.
-   * All rights reserved.
-   *
-   * This source code is licensed under the BSD-style license found in the
-   * LICENSE file in the root directory of this source tree. An additional grant
-   * of patent rights can be found in the PATENTS file in the same directory.
-   */
-
-  {
-    var REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for && Symbol.for('react.element') || 0xeac7;
-
-    var isValidElement = function isValidElement(object) {
-      return (typeof object === 'undefined' ? 'undefined' : _typeof$1(object)) === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
-    };
-
-    // By explicitly using `prop-types` you are opting into new development behavior.
-    // http://fb.me/prop-types-in-prod
-    var throwOnDirectAccess = true;
-    module.exports = factoryWithTypeCheckers(isValidElement, throwOnDirectAccess);
-  }
-});
 
 var _StyleSheetManager$ch;
 
@@ -6768,10 +6245,10 @@ var StyleSheetManager = function (_Component) {
   return StyleSheetManager;
 }(react_1);
 
-StyleSheetManager.childContextTypes = (_StyleSheetManager$ch = {}, _StyleSheetManager$ch[CONTEXT_KEY] = index$3.instanceOf(StyleSheet).isRequired, _StyleSheetManager$ch);
+StyleSheetManager.childContextTypes = (_StyleSheetManager$ch = {}, _StyleSheetManager$ch[CONTEXT_KEY] = index$5.instanceOf(StyleSheet).isRequired, _StyleSheetManager$ch);
 
 StyleSheetManager.propTypes = {
-  sheet: index$3.instanceOf(StyleSheet).isRequired
+  sheet: index$5.instanceOf(StyleSheet).isRequired
 };
 
 //      
@@ -7529,17 +7006,6 @@ function getComponentName(target) {
   return target.displayName || target.name || 'Component';
 }
 
-var index$4 = isFunction;
-
-var toString = Object.prototype.toString;
-
-function isFunction(fn) {
-  var string = toString.call(fn);
-  return string === '[object Function]' || typeof fn === 'function' && string !== '[object RegExp]' || typeof window !== 'undefined' && (
-  // IE8 and below
-  fn === window.setTimeout || fn === window.alert || fn === window.confirm || fn === window.prompt);
-}
-
 //      
 /**
  * Creates a broadcast that can be listened to, i.e. simple event emitter
@@ -7633,7 +7099,7 @@ var ThemeProvider = function (_Component) {
 
   ThemeProvider.prototype.getTheme = function getTheme(passedTheme) {
     var theme = passedTheme || this.props.theme;
-    if (index$4(theme)) {
+    if (index$6(theme)) {
       var mergedTheme = theme(this.outerTheme);
       if (!index(mergedTheme)) {
         throw new Error('[ThemeProvider] Please return an object from your theme function, i.e. theme={() => ({})}!');
@@ -7656,8 +7122,8 @@ var ThemeProvider = function (_Component) {
   return ThemeProvider;
 }(react_1);
 
-ThemeProvider.childContextTypes = (_ThemeProvider$childC = {}, _ThemeProvider$childC[CHANNEL] = index$3.func.isRequired, _ThemeProvider$childC);
-ThemeProvider.contextTypes = (_ThemeProvider$contex = {}, _ThemeProvider$contex[CHANNEL] = index$3.func, _ThemeProvider$contex);
+ThemeProvider.childContextTypes = (_ThemeProvider$childC = {}, _ThemeProvider$childC[CHANNEL] = index$5.func.isRequired, _ThemeProvider$childC);
+ThemeProvider.contextTypes = (_ThemeProvider$contex = {}, _ThemeProvider$contex[CHANNEL] = index$5.func, _ThemeProvider$contex);
 
 var _AbstractStyledCompon;
 
@@ -7673,7 +7139,7 @@ var AbstractStyledComponent = function (_Component) {
   return AbstractStyledComponent;
 }(react_1);
 
-AbstractStyledComponent.contextTypes = (_AbstractStyledCompon = {}, _AbstractStyledCompon[CHANNEL] = index$3.func, _AbstractStyledCompon[CONTEXT_KEY] = index$3.instanceOf(StyleSheet), _AbstractStyledCompon);
+AbstractStyledComponent.contextTypes = (_AbstractStyledCompon = {}, _AbstractStyledCompon[CHANNEL] = index$5.func, _AbstractStyledCompon[CONTEXT_KEY] = index$5.instanceOf(StyleSheet), _AbstractStyledCompon);
 
 //      
 
@@ -7875,7 +7341,7 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
 
       createClass$1(StyledComponent, null, [{
         key: 'extend',
-        get: function get() {
+        get: function get$$1() {
           var _ = options.displayName,
               __ = options.componentId,
               rulesFromOptions = options.rules,
@@ -7895,7 +7361,7 @@ var _StyledComponent = (function (ComponentStyle, constructWithOptions) {
       return StyledComponent;
     }(ParentComponent);
 
-    StyledComponent.contextTypes = (_StyledComponent$cont = {}, _StyledComponent$cont[CHANNEL] = index$3.func, _StyledComponent$cont[CONTEXT_KEY] = index$3.instanceOf(StyleSheet), _StyledComponent$cont);
+    StyledComponent.contextTypes = (_StyledComponent$cont = {}, _StyledComponent$cont[CHANNEL] = index$5.func, _StyledComponent$cont[CONTEXT_KEY] = index$5.instanceOf(StyleSheet), _StyledComponent$cont);
     StyledComponent.displayName = displayName;
     StyledComponent.styledComponentId = styledComponentId;
     StyledComponent.attrs = attrs;
