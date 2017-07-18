@@ -77,12 +77,13 @@ var floatOppositeDirection = function floatOppositeDirection() {
 };
 
 var parseMedia = function parseMedia(media) {
-  if (!media) return false;
   if (typeof media === 'number') {
     return 'only screen and (min-width: ' + media + 'px)';
-  } else if (typeof media === 'string') {
+  }
+  if (typeof media === 'string') {
     return media;
   }
+  return false;
 };
 
 var defineProperty = function (obj, key, value) {
