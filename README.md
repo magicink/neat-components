@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/magicink/neat-components.svg?branch=master)](https://travis-ci.org/magicink/neat-components)
+[![Build Status](https://travis-ci.org/magicink/neat-components.svg?branch=develop)](https://travis-ci.org/magicink/neat-components)
 
 # Neat Components
 
