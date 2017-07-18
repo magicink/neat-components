@@ -325,9 +325,9 @@ class App extends Component {
 
 ```
 
-### gridVisual()
+### gridVisual(theme)
 
-Creates series of visual guidelines based on the grid system
+Creates series of visual guidelines based on the grid system.
 
 ## References
 
