@@ -1,4 +1,11 @@
-const defaults = {
+// @flow
+export const NeatTheme: {
+  color: ?string,
+  columns: number,
+  direction: string,
+  gutter: string,
+  media: ?string |? number
+} = {
   color: null,
   columns: 12,
   direction: 'ltr',
@@ -6,18 +13,18 @@ const defaults = {
   media: null
 }
 
-let Neat = ({
+const Neat: Function = ({
   color,
   columns,
   direction,
   gutter,
   media
-} = defaults) => ({
-  color: color || defaults.color,
-  columns: columns || defaults.columns,
-  direction: (direction === 'ltr' || direction === 'rtl') ? direction : defaults.direction,
-  gutter: gutter || defaults.gutter,
-  media: media || defaults.media
+}: typeof NeatTheme = NeatTheme): typeof NeatTheme => ({
+  color: color || NeatTheme.color,
+  columns: columns || NeatTheme.columns,
+  direction: (direction === 'ltr' || direction === 'rtl') ? direction : NeatTheme.direction,
+  gutter: gutter || NeatTheme.gutter,
+  media: media || NeatTheme.media
 })
 
 export default Neat

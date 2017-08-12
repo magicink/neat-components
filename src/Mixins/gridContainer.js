@@ -1,4 +1,5 @@
-let gridContainer = (parent = '&') => {
+// @flow
+const gridContainer: Function = (parent: string = '&') => {
   const psuedoSelector = `${parent}::after`
   return {
     [psuedoSelector]: {
