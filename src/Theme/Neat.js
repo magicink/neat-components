@@ -4,7 +4,7 @@ export const NeatTheme: {
   columns: number,
   direction: string,
   gutter: string,
-  media: ?string |? number
+  media: ?string |?number
 } = {
   color: null,
   columns: 12,
