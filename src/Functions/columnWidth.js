@@ -1,9 +1,11 @@
+// @flow
 import parseUnit from './parseUnit'
 import stripUnit from './stripUnit'
+import { NeatTheme } from '../'
 
-let columnWidth = (theme, span) => {
+const columnWidth: Function = (theme: typeof NeatTheme, span: number): string => {
   const { columns, gutter } = theme
-  if (!columns || gutter === undefined) return false
+  if (!columns || gutter === undefined) return '0'
   let ratio = span / columns
   let gutterValue = stripUnit(gutter)
   let gutterUnit = parseUnit(gutter)

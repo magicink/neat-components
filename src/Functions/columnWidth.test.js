@@ -13,6 +13,6 @@ describe('columnWidth()', () => {
 
   it('should handle a malformed grid', () => {
     let result = columnWidth({}, 2)
-    expect(result).toBe(false)
+    expect(result).toBe('0')
   })
 })

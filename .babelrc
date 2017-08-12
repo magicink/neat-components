@@ -1,4 +1,7 @@
 {
+  "presets": [
+    "flow"
+  ],
   "env": {
     "test": {
       "presets": [
