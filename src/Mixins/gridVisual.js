@@ -1,8 +1,12 @@
+// @flow
 import { columnWidth } from '../Functions'
+import { NeatTheme } from '../Theme/Neat'
 
-let gridVisual = (theme) => {
+let gridVisual: Function = (theme: typeof NeatTheme): {
+  'background-image'?: string
+} => {
   let { color, gutter } = theme
-  if (!gutter) return false
+  if (!gutter) return {}
   color = color || ''
   return {
     'background-image': `

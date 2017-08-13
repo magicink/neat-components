@@ -1,11 +1,16 @@
+// @flow
 import {
   columnWidth,
   floatDirection,
   parseUnit,
   stripUnit
 } from '../Functions'
+import { NeatTheme } from '../Theme/Neat'
 
-let gridPush = (theme, push = 0) => {
+let gridPush: Function = (theme: typeof NeatTheme, push: number = 0): {
+  'margin-left'?: string,
+  'margin-right'?: string
+} => {
   const { direction, gutter } = theme
   if (push > 0) {
     let gutterValue = stripUnit(gutter)
