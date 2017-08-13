@@ -1,6 +1,6 @@
 // @flow
 import { columnWidth, floatDirection } from '../Functions'
-import { NeatTheme } from '../Theme/Neat'
+import { NeatTheme } from '../Theme/NeatTheme'
 
 let gridShift: Function = (theme: typeof NeatTheme, shift: number = 0): {
   left?: string,

@@ -5,6 +5,7 @@ import commonjs from 'rollup-plugin-commonjs'
 export default {
   dest: 'bundle.js',
   entry: 'src/index.js',
+  exports: 'named',
   format: 'cjs',
   plugins: [
     resolve(),

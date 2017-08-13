@@ -5,7 +5,7 @@ import {
   parseUnit,
   stripUnit
 } from '../Functions'
-import { NeatTheme } from '../Theme/Neat'
+import { NeatTheme } from '../Theme/NeatTheme'
 
 let gridCollapse: Function = (theme: typeof NeatTheme): {
   'margin-left'?: string,

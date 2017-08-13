@@ -1,6 +1,6 @@
 // @flow
 import { columnWidth, floatDirection } from '../Functions'
-import { NeatTheme } from '../Theme/Neat'
+import { NeatTheme } from '../Theme/NeatTheme'
 
 let gridColumn: Function = (theme: typeof NeatTheme, span: number): {
   width: string,

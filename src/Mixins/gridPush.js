@@ -5,7 +5,7 @@ import {
   parseUnit,
   stripUnit
 } from '../Functions'
-import { NeatTheme } from '../Theme/Neat'
+import { NeatTheme } from '../Theme/NeatTheme'
 
 let gridPush: Function = (theme: typeof NeatTheme, push: number = 0): {
   'margin-left'?: string,

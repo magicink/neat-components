@@ -1,7 +1,7 @@
 // @flow
 import parseUnit from './parseUnit'
 import stripUnit from './stripUnit'
-import { NeatTheme } from '../'
+import { NeatTheme } from '../Theme/NeatTheme'
 
 const columnWidth: Function = (theme: typeof NeatTheme, span: number): string => {
   const { columns, gutter } = theme

@@ -1,17 +1,5 @@
 // @flow
-export const NeatTheme: {
-  color: ?string,
-  columns: number,
-  direction: string,
-  gutter: string,
-  media: ?string | ?number
-} = {
-  color: null,
-  columns: 12,
-  direction: 'ltr',
-  gutter: '20px',
-  media: null
-}
+import { NeatTheme } from './NeatTheme'
 
 const Neat: Function = ({
   color,

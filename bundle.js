@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var defaults = {
+var NeatTheme = {
   color: null,
   columns: 12,
   direction: 'ltr',
@@ -11,7 +11,7 @@ var defaults = {
 };
 
 var Neat$1 = function Neat() {
-  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaults,
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : NeatTheme,
       color = _ref.color,
       columns = _ref.columns,
       direction = _ref.direction,
@@ -19,18 +19,18 @@ var Neat$1 = function Neat() {
       media = _ref.media;
 
   return {
-    color: color || defaults.color,
-    columns: columns || defaults.columns,
-    direction: direction === 'ltr' || direction === 'rtl' ? direction : defaults.direction,
-    gutter: gutter || defaults.gutter,
-    media: media || defaults.media
+    color: color || NeatTheme.color,
+    columns: columns || NeatTheme.columns,
+    direction: direction === 'ltr' || direction === 'rtl' ? direction : NeatTheme.direction,
+    gutter: gutter || NeatTheme.gutter,
+    media: media || NeatTheme.media
   };
 };
 
 var parseUnit = function parseUnit(value) {
   var parsedValue = parseFloat(value);
   if (parsedValue) {
-    var splitValue = value.split(parsedValue);
+    var splitValue = value.split(parsedValue.toString(10));
     return splitValue[splitValue.length - 1].trim();
   } else {
     return '';
@@ -47,7 +47,7 @@ var columnWidth = function columnWidth(theme, span) {
   var columns = theme.columns,
       gutter = theme.gutter;
 
-  if (!columns || gutter === undefined) return false;
+  if (!columns || gutter === undefined) return '0';
   var ratio = span / columns;
   var gutterValue = stripUnit(gutter);
   var gutterUnit = parseUnit(gutter);
@@ -139,21 +139,22 @@ var gridCollapse = function gridCollapse(theme) {
   var direction = theme.direction,
       gutter = theme.gutter;
 
-  if (!direction || !gutter) return false;
+  if (!direction || !gutter) return {};
   var gutterUnit = parseUnit(gutter);
-  if (gutterUnit === '%') return false;
+  if (gutterUnit === '%') return {};
   var gutterValue = stripUnit(gutter);
   return _ref = {}, defineProperty(_ref, 'margin-' + floatDirection(direction), '-' + gutter), defineProperty(_ref, 'margin-' + floatOppositeDirection(direction), '-' + gutter), defineProperty(_ref, 'width', 'calc(100% + ' + gutterValue * 2 + gutterUnit + ')'), _ref;
 };
 
-var gridColumn = function gridColumn(theme) {
-  var span = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+var gridColumn = function gridColumn(theme, span) {
   var columns = theme.columns,
       direction = theme.direction,
       gutter = theme.gutter;
 
   span = Math.floor(span);
-  if (span > columns) span = columns;
+  if (span > columns) {
+    span = columns;
+  }
   return defineProperty({
     width: 'calc(' + columnWidth(theme, span) + ')',
     float: '' + floatDirection(direction)
@@ -7572,7 +7573,7 @@ var gridMedia = function gridMedia(theme) {
 
   var media = theme.media;
 
-  if (!media) return false;
+  if (!media) return [];
   return css(_templateObject, parseMedia(media), css.apply(undefined, args));
 };
 
@@ -7596,7 +7597,7 @@ var gridShift = function gridShift(theme) {
   var direction = theme.direction,
       gutter = theme.gutter;
 
-  if (!direction || gutter === undefined) return false;
+  if (!direction || gutter === undefined) return {};
   if (shift > 0) {
     var _ref;
 
@@ -7611,7 +7612,7 @@ var gridVisual = function gridVisual(theme) {
   var color = theme.color,
       gutter = theme.gutter;
 
-  if (!gutter) return false;
+  if (!gutter) return {};
   color = color || '';
   return {
     'background-image': '\n      repeating-linear-gradient(\n        to right, transparent, transparent,\n        ' + color + ' ' + gutter + ',\n        ' + color + ' calc(' + columnWidth(theme, 1) + ' + ' + gutter + ')\n      )\n    '

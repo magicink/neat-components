@@ -1,11 +1,11 @@
 import { columnWidth } from '../Functions'
 import gridColumn from './gridColumn'
-import { NeatTheme } from '../Theme/Neat'
+import Neat from '../Theme/Neat'
 
 describe('gridColumn()', () => {
   it('should return the correct object', () => {
-    const result = gridColumn(NeatTheme, 2)
-    const calculatedWidth = columnWidth(NeatTheme, 2)
+    const result = gridColumn(Neat(), 2)
+    const calculatedWidth = columnWidth(Neat(), 2)
     expect(result).toEqual({
       width: `calc(${calculatedWidth})`,
       float: 'left',
@@ -13,8 +13,8 @@ describe('gridColumn()', () => {
     })
   })
   it('should return the correct object', () => {
-    const result = gridColumn(NeatTheme, 14)
-    const calculatedWidth = columnWidth(NeatTheme, 12)
+    const result = gridColumn(Neat(), 14)
+    const calculatedWidth = columnWidth(Neat(), 12)
     expect(result).toEqual({
       width: `calc(${calculatedWidth})`,
       float: 'left',
