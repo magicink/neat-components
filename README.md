@@ -34,7 +34,7 @@ let Column = styled.div`
 class App extends Component {
   render () {
     return (
-      <ThemeProvider theme={Neat}>
+      <ThemeProvider theme={Neat()}>
         <div>
           <Container>
             <Column />
