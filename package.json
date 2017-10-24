@@ -1,6 +1,6 @@
 {
   "name": "neat-components",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "main": "bundle.js",
   "license": "MIT",
