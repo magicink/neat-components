@@ -1,6 +1,6 @@
 {
   "name": "neat-components",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "main": "bundle.js",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=prod rollup -c",
     "build:develop": "cross-env NODE_ENV=prod rollup -c -w",
-    "lint": "standard \"./src/**.js\"",
+    "lint": "standard --parser babel-eslint \"./src/**.js\"",
     "test": "yarn lint && cross-env NODE_ENV=test jest",
     "test:watch": "cross-env NODE_ENV=test jest --watch"
   },
@@ -37,7 +37,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "react": "^15.6.1",
+    "react": "^0.14.0 || ^15.0.0 || ^16.0.0",
     "styled-components": "^2.1.0"
   },
   "keywords": [
@@ -54,7 +54,6 @@
     ]
   },
   "standard": {
-    "parser": "babel-eslint",
     "plugins": [
       "flowtype"
     ],
