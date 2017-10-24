@@ -1,5 +1,6 @@
 // @flow
 import { NeatTheme } from './NeatTheme'
+import type { Theme } from './NeatTheme'
 
 const Neat: Function = ({
   color,
@@ -7,7 +8,7 @@ const Neat: Function = ({
   direction,
   gutter,
   media
-}: typeof NeatTheme = NeatTheme): typeof NeatTheme => ({
+}: Theme = NeatTheme): Theme => ({
   color: color || NeatTheme.color,
   columns: columns || NeatTheme.columns,
   direction: (direction === 'ltr' || direction === 'rtl') ? direction : NeatTheme.direction,
