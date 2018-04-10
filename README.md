@@ -7,32 +7,27 @@ A Styled Components implementation of Thoughtbot's Neat 2.0
 ### Usage
 
 ```javascript
-import React, { Component } from 'react'
-import styled, { ThemeProvider } from 'styled-components'
-import Neat, {
-  gridContainer,
-  gridColumn,
-  gridShift
-} from 'neat-components'
+import React, { Component } from "react";
+import styled, { ThemeProvider } from "styled-components";
+import Neat, { gridContainer, gridColumn, gridShift } from "neat-components";
 
 let constants = () => {
   return `
     background-color: blue;
     height: 50px;
     margin-top: 1em;
-  `
-}
+  `;
+};
 
 let Container = styled.div`
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 let Column = styled.div`
-  ${constants()}
-  ${props => gridColumn(props.theme, 1)}
-`
+  ${constants()} ${props => gridColumn(props.theme, 1)};
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <div>
@@ -44,21 +39,21 @@ class App extends Component {
           </Container>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 }
 
-export default App
+export default App;
 ```
 
 ## API
 
 ### Neat([settings])
+
 Returns a theme object. You can pass this theme to a `ThemeProvider` component. For example
+
 ```javascript
-<ThemeProvider theme={Neat()}>
-  ...
-</ThemeProvider>
+<ThemeProvider theme={Neat()}>...</ThemeProvider>
 ```
 
 You can pass in a `settings` object to create a custom grid. The `settings` object has the following properties:
@@ -74,20 +69,20 @@ You can pass in a `settings` object to create a custom grid. The `settings` obje
 **`media`**: Used by `gridMedia()` to specify the media the grid should be applied. It can accept a string (i.e. `only screen and (max-width: 800px)`) or a number (i.e `800`). The later would produce `only screen and (min-width: 800px)`. Defaults to `null`.
 
 ```javascript
-const CustomGrid = Neat({columns: 3, gutter: '60px'})
+const CustomGrid = Neat({ columns: 3, gutter: "60px" });
 const Container = styled.div`
   margin-top: 1rem;
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 const WideColumn = styled.div`
   background-image: linear-gradient(to bottom right, #21e9f4, #00d4ff);
   border-radius: 5px;
   height: 20rem;
-  ${props => gridColumn(props.theme, 1)}
-`
+  ${props => gridColumn(props.theme, 1)};
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <Container>
@@ -96,7 +91,7 @@ class App extends Component {
           <WideColumn theme={CustomGrid} />
         </Container>
       </ThemeProvider>
-    )
+    );
   }
 }
 ```
@@ -108,41 +103,40 @@ Used to create grids within grids.
 ```javascript
 const SidebarGrid = Neat({
   columns: 3,
-  gutter: '40px'
-})
+  gutter: "40px"
+});
 
 const GalleryGrid = Neat({
   columns: 4,
-  gutter: '40px'
-})
+  gutter: "40px"
+});
 
 const Container = styled.div`
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 
 const SideBar = styled.div`
   height: 19rem;
-  ${props => gridColumn(SidebarGrid, 1)}
-`
+  ${props => gridColumn(SidebarGrid, 1)};
+`;
 
 const Gallery = styled.div`
-  ${props => gridColumn(GalleryGrid, 2)}
-`
+  ${props => gridColumn(GalleryGrid, 2)};
+`;
 
 const GalleryContainer = styled.div`
-  ${gridCollapse(GalleryGrid)}
-  ${gridContainer()}
-`
+  ${gridCollapse(GalleryGrid)} ${gridContainer()};
+`;
 
 const GalleryItem = styled.div`
   background-color: #496278;
   height: 4rem;
   margin-bottom: 1rem;
-  ${gridColumn(GalleryGrid, 1)}
-`
+  ${gridColumn(GalleryGrid, 1)};
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <Container>
@@ -155,7 +149,7 @@ class App extends Component {
           </Gallery>
         </Container>
       </ThemeProvider>
-    )
+    );
   }
 }
 ```
@@ -166,11 +160,11 @@ Creates a component that occupies `span` number of a given theme's columns
 
 ```javascript
 let Column = styled.div`
-  ${props => gridColumn(props.theme, 1)}
-`
+  ${props => gridColumn(props.theme, 1)};
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <div>
@@ -182,7 +176,7 @@ class App extends Component {
           </Container>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 }
 ```
@@ -193,18 +187,16 @@ Injects a clearfix solution into the component.
 
 ```javascript
 const Container = styled.div`
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
-        <Container>
-          ...
-        </Container>
+        <Container>...</Container>
       </ThemeProvider>
-    )
+    );
   }
 }
 ```
@@ -214,28 +206,57 @@ class App extends Component {
 Used to inject media queries into the component.
 
 ```javascript
-let MobileGrid = Neat({
-  columns: 1,
+/
+const mobileGrid = Neat({
+  columns: 12,
+  gutter: '10px',
+  media: 'only screen and (max-width: 600px)'
+})
+
+const desktopGrid = Neat({
+  columns: 12,
   gutter: '20px',
-  media: 'only screen and (max-width: 800px)'
+  media: 'only screen and (min-width: 601px)'
 })
 
-let DesktopGrid = Neat({
-  columns: 1,
-  gutter: '40px',
-  media: 'only screen and (max-width: 1200px)'
-})
-
-let Logo = styled.div`
-  align-items: center;
-  display: flex;
+const Column = styled.div`
   height: 50px;
-  ${props => gridColumn(MobileGrid, 1)}
-  ${props => gridMedia(DesktopGrid, [
-    `height: 150px`,
-    gridColumn(MobileGrid, 1)
-  ])}
+  background-color: yellow;
+  margin-top: 1rem;
+  ${gridColumn(mobileGrid, 2)}
+  ${gridMedia(desktopGrid, {
+    ...gridColumn(desktopGrid, 1),
+    'background-color': 'red'
+  })}
 `
+
+const Container = styled.div`
+  ${gridContainer()}
+`
+
+export class GridMedia extends React.Component {
+  render () {
+    return [
+      <h1 key={'header'}><code>gridMedia</code></h1>,
+      <ThemeProvider key={'provider'} theme={Neat()}>
+        <Container>
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+          <Column />
+        </Container>
+      </ThemeProvider>
+    ]
+  }
+}
 ```
 
 ### gridShift(theme, shift)
@@ -248,25 +269,24 @@ let constants = () => {
     background-color: blue;
     height: 50px;
     margin-top: 1em;
-  `
-}
+  `;
+};
 
 let Container = styled.div`
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 let Column = styled.div`
-  ${constants()}
-  ${props => gridColumn(props.theme, 1)}
-`
+  ${constants()} ${props => gridColumn(props.theme, 1)};
+`;
 
 let Shifted = styled.div`
   ${constants()}
   ${props => gridColumn(props.theme, 1)}
   ${props => gridShift(props.theme, 2)}
-`
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <div>
@@ -276,7 +296,7 @@ class App extends Component {
           </Container>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 }
 ```
@@ -291,25 +311,24 @@ let constants = () => {
     background-color: blue;
     height: 50px;
     margin-top: 1em;
-  `
-}
+  `;
+};
 
 let Container = styled.div`
-  ${gridContainer()}
-`
+  ${gridContainer()};
+`;
 let Column = styled.div`
-  ${constants()}
-  ${props => gridColumn(props.theme, 1)}
-`
+  ${constants()} ${props => gridColumn(props.theme, 1)};
+`;
 
 let Pushed = styled.div`
   ${constants()}
   ${props => gridColumn(props.theme, 1)}
   ${props => gridPush(props.theme, 2)}
-`
+`;
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <ThemeProvider theme={Neat()}>
         <div>
@@ -319,10 +338,9 @@ class App extends Component {
           </Container>
         </div>
       </ThemeProvider>
-    )
+    );
   }
 }
-
 ```
 
 ### gridVisual(theme)
@@ -331,5 +349,5 @@ Creates series of visual guidelines based on the grid system.
 
 ## References
 
-- [Neat 2.x](http://neat.bourbon.io)
-- [styled-components](https://www.styled-components.com/)
+* [Neat 2.x](http://neat.bourbon.io)
+* [styled-components](https://www.styled-components.com/)

@@ -2,9 +2,11 @@
 import { columnWidth } from '../Functions'
 import { NeatTheme } from '../Theme/NeatTheme'
 
-let gridVisual: Function = (theme: typeof NeatTheme): {
+type Styles = {
   'background-image'?: string
-} => {
+}
+
+let gridVisual: Function = (theme: typeof NeatTheme): Styles => {
   let { color, gutter } = theme
   if (!gutter) return {}
   color = color || ''

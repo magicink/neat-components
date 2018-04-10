@@ -1,19 +1,21 @@
 {
-  "presets": [
-    "flow"
-  ],
   "env": {
     "test": {
       "presets": [
-        "es2015",
-        "stage-2",
-        "flow"
+        ["env", {"modules": false, "forceAllTransforms": true}],
+        "flow",
+        "react",
+        "stage-0"
+      ],
+      "plugins": [
+        "transform-decorators-legacy",
+        "transform-es2015-modules-commonjs"
       ]
     },
-    "prod": {
+    "production": {
       "presets": [
-        ["es2015", {"modules": false}],
-        "stage-2",
+        ["env", {"modules": false}],
+        "stage-0",
         "react"
       ],
       "plugins": ["external-helpers"]

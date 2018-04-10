@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import Neat from './Theme/Neat'
 import gridCollapse from './Mixins/gridCollapse'
 import gridColumn from './Mixins/gridColumn'

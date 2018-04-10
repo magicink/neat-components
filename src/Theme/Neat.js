@@ -2,18 +2,12 @@
 import { NeatTheme } from './NeatTheme'
 import type { Theme } from './NeatTheme'
 
-const Neat: Function = ({
-  color,
-  columns,
-  direction,
-  gutter,
-  media
-}: Theme = NeatTheme): Theme => ({
-  color: color || NeatTheme.color,
-  columns: columns || NeatTheme.columns,
-  direction: (direction === 'ltr' || direction === 'rtl') ? direction : NeatTheme.direction,
-  gutter: gutter || NeatTheme.gutter,
-  media: media || NeatTheme.media
+const Neat: Function = (theme: Theme = NeatTheme): Theme => ({
+  color: theme.color || NeatTheme.color,
+  columns: theme.columns || NeatTheme.columns,
+  direction: (theme.direction === 'ltr' || theme.direction === 'rtl') ? theme.direction : NeatTheme.direction,
+  gutter: theme.gutter || NeatTheme.gutter,
+  media: theme.media || NeatTheme.media
 })
 
 export default Neat

@@ -7,10 +7,12 @@ import {
 } from '../Functions'
 import { NeatTheme } from '../Theme/NeatTheme'
 
-let gridPush: Function = (theme: typeof NeatTheme, push: number = 0): {
+type Styles = {
   'margin-left'?: string,
   'margin-right'?: string
-} => {
+}
+
+let gridPush: Function = (theme: typeof NeatTheme, push: number = 0): Styles => {
   const { direction, gutter } = theme
   if (push > 0) {
     let gutterValue = stripUnit(gutter)

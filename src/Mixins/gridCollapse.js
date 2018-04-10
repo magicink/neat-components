@@ -5,13 +5,15 @@ import {
   parseUnit,
   stripUnit
 } from '../Functions'
-import { NeatTheme } from '../Theme/NeatTheme'
+import type { Theme } from '../Theme/NeatTheme'
 
-let gridCollapse: Function = (theme: typeof NeatTheme): {
+type Styles = {
   'margin-left'?: string,
   'margin-right'?: string,
   width?: string
-} => {
+}
+
+const gridCollapse: Function = (theme: Theme): Styles => {
   const { direction, gutter } = theme
   if (!direction || !gutter) return {}
   let gutterUnit = parseUnit(gutter)

@@ -1,13 +1,15 @@
 // @flow
 import { columnWidth, floatDirection } from '../Functions'
-import { NeatTheme } from '../Theme/NeatTheme'
+import type { Theme } from '../Theme/NeatTheme'
 
-let gridColumn: Function = (theme: typeof NeatTheme, span: number): {
+type Styles = {
   width: string,
   float: string,
   'margin-left'?: string,
   'margin-right'?: string
-} => {
+}
+
+let gridColumn: Function = (theme: Theme, span: number): Styles => {
   const { columns, direction, gutter } = theme
   span = Math.floor(span)
   if (span > columns) {
