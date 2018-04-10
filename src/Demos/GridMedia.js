@@ -20,10 +20,10 @@ const Column = styled.div`
   background-color: yellow;
   margin-top: 1rem;
   ${gridColumn(mobileGrid, 2)}
-  ${gridMedia(desktopGrid, {
+  ${gridMedia(desktopGrid, [{
     ...gridColumn(desktopGrid, 1),
     'background-color': 'red'
-  })}
+  }])}
 `
 
 const Container = styled.div`
