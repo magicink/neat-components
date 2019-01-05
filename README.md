@@ -2,7 +2,7 @@
 
 # Neat Components
 
-A Styled Components implementation of Thoughtbot's Neat 2.0
+A Styled Components implementation of Thoughtbot's Neat 2.0: https://magicink.github.io/neat-components/docs/
 
 ### Usage
 
