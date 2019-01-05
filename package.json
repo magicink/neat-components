@@ -9,7 +9,7 @@
     "build": "rollup --config rollup.config.js",
     "lint": "standard --parser babel-eslint \"./src/**.js\"",
     "storybook": "start-storybook -c .storybook -p 9001",
-    "storybook:build": "build-storybook -c .storybook -o .out",
+    "storybook:build": "build-storybook -c .storybook -o docs",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
