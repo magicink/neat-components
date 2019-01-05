@@ -95,8 +95,7 @@ storiesOf('Neat Components', module)
     const Container = styled.div`
       ${gridContainer()}
     `
-    return [
-      <h1 key={'header'}><code>gridMedia</code></h1>,
+    return (
       <ThemeProvider key={'provider'} theme={Neat()}>
         <Container>
           <Column />
@@ -113,7 +112,7 @@ storiesOf('Neat Components', module)
           <Column />
         </Container>
       </ThemeProvider>
-    ]
+    )
   })
   .add('9/3 Column Grid', () => {
     let constants = () => {
