@@ -1,24 +1,15 @@
 {
-  "env": {
-    "test": {
-      "presets": [
-        ["env", {"modules": false, "forceAllTransforms": true}],
-        "flow",
-        "react",
-        "stage-0"
-      ],
-      "plugins": [
-        "transform-decorators-legacy",
-        "transform-es2015-modules-commonjs"
-      ]
-    },
-    "production": {
-      "presets": [
-        ["env", {"modules": false}],
-        "stage-0",
-        "react"
-      ],
-      "plugins": ["external-helpers"]
-    }
-  }
+  "presets": [
+    ["@babel/preset-env", {
+      "modules": false,
+      "forceAllTransforms": true
+    }],
+    "@babel/preset-flow",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-transform-modules-commonjs",
+    "@babel/plugin-transform-runtime"
+  ]
 }

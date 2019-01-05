@@ -1,4 +1,4 @@
-// flow-typed signature: be2e773d879bed7c371638908fa50539
+// flow-typed signature: e35d2c8e0c7c0e78256c001735679829
 // flow-typed version: <<STUB>>/styled-components_v^3.2.5/flow_v0.52.0
 
 /**
@@ -26,7 +26,7 @@ declare module 'styled-components/dist/styled-components-no-parser.browser.cjs' 
   declare module.exports: any;
 }
 
-declare module 'styled-components/dist/styled-components-no-parser.browser.es' {
+declare module 'styled-components/dist/styled-components-no-parser.browser.esm' {
   declare module.exports: any;
 }
 
@@ -34,7 +34,7 @@ declare module 'styled-components/dist/styled-components-no-parser.cjs' {
   declare module.exports: any;
 }
 
-declare module 'styled-components/dist/styled-components-no-parser.es' {
+declare module 'styled-components/dist/styled-components-no-parser.esm' {
   declare module.exports: any;
 }
 
@@ -42,7 +42,7 @@ declare module 'styled-components/dist/styled-components-primitives.cjs' {
   declare module.exports: any;
 }
 
-declare module 'styled-components/dist/styled-components-primitives.es' {
+declare module 'styled-components/dist/styled-components-primitives.esm' {
   declare module.exports: any;
 }
 
@@ -50,7 +50,15 @@ declare module 'styled-components/dist/styled-components.browser.cjs' {
   declare module.exports: any;
 }
 
-declare module 'styled-components/dist/styled-components.browser.es' {
+declare module 'styled-components/dist/styled-components.browser.cjs.min' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/dist/styled-components.browser.esm' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/dist/styled-components.browser.esm.min' {
   declare module.exports: any;
 }
 
@@ -58,7 +66,15 @@ declare module 'styled-components/dist/styled-components.cjs' {
   declare module.exports: any;
 }
 
-declare module 'styled-components/dist/styled-components.es' {
+declare module 'styled-components/dist/styled-components.cjs.min' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/dist/styled-components.esm' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/dist/styled-components.esm.min' {
   declare module.exports: any;
 }
 
@@ -83,10 +99,6 @@ declare module 'styled-components/flow-typed/enzyme_v3.x.x' {
 }
 
 declare module 'styled-components/flow-typed/fbjs_vx.x.x' {
-  declare module.exports: any;
-}
-
-declare module 'styled-components/flow-typed/lodash_v4.x.x' {
   declare module.exports: any;
 }
 
@@ -294,7 +306,27 @@ declare module 'styled-components/flow-typed/react-native' {
   declare module.exports: any;
 }
 
+declare module 'styled-components/flow-typed/webpack-hotmodule' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/native/dist/styled-components.native.cjs' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/native/dist/styled-components.native.esm' {
+  declare module.exports: any;
+}
+
 declare module 'styled-components/native/index' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/primitives/dist/styled-components-primitives.cjs' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/primitives/dist/styled-components-primitives.esm' {
   declare module.exports: any;
 }
 
@@ -534,6 +566,14 @@ declare module 'styled-components/src/utils/domElements' {
   declare module.exports: any;
 }
 
+declare module 'styled-components/src/utils/empties' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/src/utils/error' {
+  declare module.exports: any;
+}
+
 declare module 'styled-components/src/utils/escape' {
   declare module.exports: any;
 }
@@ -550,7 +590,15 @@ declare module 'styled-components/src/utils/generateAlphabeticName' {
   declare module.exports: any;
 }
 
+declare module 'styled-components/src/utils/generateDisplayName' {
+  declare module.exports: any;
+}
+
 declare module 'styled-components/src/utils/getComponentName' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/src/utils/hasInInheritanceChain' {
   declare module.exports: any;
 }
 
@@ -559,6 +607,10 @@ declare module 'styled-components/src/utils/insertRuleHelpers' {
 }
 
 declare module 'styled-components/src/utils/interleave' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/src/utils/isPlainObject' {
   declare module.exports: any;
 }
 
@@ -590,6 +642,10 @@ declare module 'styled-components/src/utils/test/determineTheme.test' {
   declare module.exports: any;
 }
 
+declare module 'styled-components/src/utils/test/error.test' {
+  declare module.exports: any;
+}
+
 declare module 'styled-components/src/utils/test/escape.test' {
   declare module.exports: any;
 }
@@ -603,6 +659,10 @@ declare module 'styled-components/src/utils/test/flatten.test' {
 }
 
 declare module 'styled-components/src/utils/test/generateAlphabeticName.test' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/src/utils/test/generateDisplayName.test' {
   declare module.exports: any;
 }
 
@@ -734,36 +794,56 @@ declare module 'styled-components/src/vendor/postcss/warning' {
   declare module.exports: any;
 }
 
+declare module 'styled-components/test-utils/index' {
+  declare module.exports: any;
+}
+
+declare module 'styled-components/test-utils/setupTestFramework' {
+  declare module.exports: any;
+}
+
 // Filename aliases
 declare module 'styled-components/dist/styled-components-no-parser.browser.cjs.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.browser.cjs'>;
 }
-declare module 'styled-components/dist/styled-components-no-parser.browser.es.js' {
-  declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.browser.es'>;
+declare module 'styled-components/dist/styled-components-no-parser.browser.esm.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.browser.esm'>;
 }
 declare module 'styled-components/dist/styled-components-no-parser.cjs.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.cjs'>;
 }
-declare module 'styled-components/dist/styled-components-no-parser.es.js' {
-  declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.es'>;
+declare module 'styled-components/dist/styled-components-no-parser.esm.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components-no-parser.esm'>;
 }
 declare module 'styled-components/dist/styled-components-primitives.cjs.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components-primitives.cjs'>;
 }
-declare module 'styled-components/dist/styled-components-primitives.es.js' {
-  declare module.exports: $Exports<'styled-components/dist/styled-components-primitives.es'>;
+declare module 'styled-components/dist/styled-components-primitives.esm.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components-primitives.esm'>;
 }
 declare module 'styled-components/dist/styled-components.browser.cjs.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components.browser.cjs'>;
 }
-declare module 'styled-components/dist/styled-components.browser.es.js' {
-  declare module.exports: $Exports<'styled-components/dist/styled-components.browser.es'>;
+declare module 'styled-components/dist/styled-components.browser.cjs.min.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.browser.cjs.min'>;
+}
+declare module 'styled-components/dist/styled-components.browser.esm.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.browser.esm'>;
+}
+declare module 'styled-components/dist/styled-components.browser.esm.min.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.browser.esm.min'>;
 }
 declare module 'styled-components/dist/styled-components.cjs.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components.cjs'>;
 }
-declare module 'styled-components/dist/styled-components.es.js' {
-  declare module.exports: $Exports<'styled-components/dist/styled-components.es'>;
+declare module 'styled-components/dist/styled-components.cjs.min.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.cjs.min'>;
+}
+declare module 'styled-components/dist/styled-components.esm.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.esm'>;
+}
+declare module 'styled-components/dist/styled-components.esm.min.js' {
+  declare module.exports: $Exports<'styled-components/dist/styled-components.esm.min'>;
 }
 declare module 'styled-components/dist/styled-components.js' {
   declare module.exports: $Exports<'styled-components/dist/styled-components'>;
@@ -782,9 +862,6 @@ declare module 'styled-components/flow-typed/enzyme_v3.x.x.js' {
 }
 declare module 'styled-components/flow-typed/fbjs_vx.x.x.js' {
   declare module.exports: $Exports<'styled-components/flow-typed/fbjs_vx.x.x'>;
-}
-declare module 'styled-components/flow-typed/lodash_v4.x.x.js' {
-  declare module.exports: $Exports<'styled-components/flow-typed/lodash_v4.x.x'>;
 }
 declare module 'styled-components/flow-typed/npm/babel-cli_vx.x.x.js' {
   declare module.exports: $Exports<'styled-components/flow-typed/npm/babel-cli_vx.x.x'>;
@@ -939,8 +1016,23 @@ declare module 'styled-components/flow-typed/npm/supports-color_v3.x.x.js' {
 declare module 'styled-components/flow-typed/react-native.js' {
   declare module.exports: $Exports<'styled-components/flow-typed/react-native'>;
 }
+declare module 'styled-components/flow-typed/webpack-hotmodule.js' {
+  declare module.exports: $Exports<'styled-components/flow-typed/webpack-hotmodule'>;
+}
+declare module 'styled-components/native/dist/styled-components.native.cjs.js' {
+  declare module.exports: $Exports<'styled-components/native/dist/styled-components.native.cjs'>;
+}
+declare module 'styled-components/native/dist/styled-components.native.esm.js' {
+  declare module.exports: $Exports<'styled-components/native/dist/styled-components.native.esm'>;
+}
 declare module 'styled-components/native/index.js' {
   declare module.exports: $Exports<'styled-components/native/index'>;
+}
+declare module 'styled-components/primitives/dist/styled-components-primitives.cjs.js' {
+  declare module.exports: $Exports<'styled-components/primitives/dist/styled-components-primitives.cjs'>;
+}
+declare module 'styled-components/primitives/dist/styled-components-primitives.esm.js' {
+  declare module.exports: $Exports<'styled-components/primitives/dist/styled-components-primitives.esm'>;
 }
 declare module 'styled-components/scripts/postinstall.js' {
   declare module.exports: $Exports<'styled-components/scripts/postinstall'>;
@@ -1119,6 +1211,12 @@ declare module 'styled-components/src/utils/determineTheme.js' {
 declare module 'styled-components/src/utils/domElements.js' {
   declare module.exports: $Exports<'styled-components/src/utils/domElements'>;
 }
+declare module 'styled-components/src/utils/empties.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/empties'>;
+}
+declare module 'styled-components/src/utils/error.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/error'>;
+}
 declare module 'styled-components/src/utils/escape.js' {
   declare module.exports: $Exports<'styled-components/src/utils/escape'>;
 }
@@ -1131,14 +1229,23 @@ declare module 'styled-components/src/utils/flatten.js' {
 declare module 'styled-components/src/utils/generateAlphabeticName.js' {
   declare module.exports: $Exports<'styled-components/src/utils/generateAlphabeticName'>;
 }
+declare module 'styled-components/src/utils/generateDisplayName.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/generateDisplayName'>;
+}
 declare module 'styled-components/src/utils/getComponentName.js' {
   declare module.exports: $Exports<'styled-components/src/utils/getComponentName'>;
+}
+declare module 'styled-components/src/utils/hasInInheritanceChain.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/hasInInheritanceChain'>;
 }
 declare module 'styled-components/src/utils/insertRuleHelpers.js' {
   declare module.exports: $Exports<'styled-components/src/utils/insertRuleHelpers'>;
 }
 declare module 'styled-components/src/utils/interleave.js' {
   declare module.exports: $Exports<'styled-components/src/utils/interleave'>;
+}
+declare module 'styled-components/src/utils/isPlainObject.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/isPlainObject'>;
 }
 declare module 'styled-components/src/utils/isStyledComponent.js' {
   declare module.exports: $Exports<'styled-components/src/utils/isStyledComponent'>;
@@ -1161,6 +1268,9 @@ declare module 'styled-components/src/utils/styleNames.js' {
 declare module 'styled-components/src/utils/test/determineTheme.test.js' {
   declare module.exports: $Exports<'styled-components/src/utils/test/determineTheme.test'>;
 }
+declare module 'styled-components/src/utils/test/error.test.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/test/error.test'>;
+}
 declare module 'styled-components/src/utils/test/escape.test.js' {
   declare module.exports: $Exports<'styled-components/src/utils/test/escape.test'>;
 }
@@ -1172,6 +1282,9 @@ declare module 'styled-components/src/utils/test/flatten.test.js' {
 }
 declare module 'styled-components/src/utils/test/generateAlphabeticName.test.js' {
   declare module.exports: $Exports<'styled-components/src/utils/test/generateAlphabeticName.test'>;
+}
+declare module 'styled-components/src/utils/test/generateDisplayName.test.js' {
+  declare module.exports: $Exports<'styled-components/src/utils/test/generateDisplayName.test'>;
 }
 declare module 'styled-components/src/utils/test/getComponentName.test.js' {
   declare module.exports: $Exports<'styled-components/src/utils/test/getComponentName.test'>;
@@ -1268,4 +1381,10 @@ declare module 'styled-components/src/vendor/postcss/warn-once.js' {
 }
 declare module 'styled-components/src/vendor/postcss/warning.js' {
   declare module.exports: $Exports<'styled-components/src/vendor/postcss/warning'>;
+}
+declare module 'styled-components/test-utils/index.js' {
+  declare module.exports: $Exports<'styled-components/test-utils/index'>;
+}
+declare module 'styled-components/test-utils/setupTestFramework.js' {
+  declare module.exports: $Exports<'styled-components/test-utils/setupTestFramework'>;
 }

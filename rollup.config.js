@@ -2,7 +2,7 @@ import babel from 'rollup-plugin-babel'
 import flow from 'rollup-plugin-flow'
 import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
-import uglify from 'rollup-plugin-uglify'
+import {terser} from 'rollup-plugin-terser'
 
 export default [{
   external: ['react', 'styled-components'],
@@ -14,13 +14,20 @@ export default [{
   },
   plugins: [
     babel({
-      exclude: 'node_modules/**'
+      babelrc: false,
+      exclude: 'node_modules/**',
+      plugins: [
+        '@babel/plugin-syntax-dynamic-import',
+        '@babel/plugin-transform-runtime'
+      ],
+      presets: [
+        '@babel/preset-flow',
+        '@babel/preset-react'
+      ],
+      runtimeHelpers: true
     }),
     flow({all: true}),
     resolve(),
-    uglify({
-      ie8: false,
-      mangle: false
-    })
+    terser()
   ]
 }]
