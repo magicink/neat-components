@@ -1,8 +1,7 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import styled, { ThemeProvider } from 'styled-components'
-import Neat, { gridColumn, gridContainer } from '../bundle'
-import gridMedia from '../src/Mixins/gridMedia'
+import Neat, { gridColumn, gridContainer, gridMedia } from '../bundle'
 
 storiesOf('Neat Components', module)
   .add('12 Column Grid', () => {
