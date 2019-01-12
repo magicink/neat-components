@@ -7,7 +7,7 @@ describe('gridContainer()', () => {
     expect(result).toEqual({
       '&::after': {
         clear: 'both',
-        content: '',
+        content: '""',
         display: 'block'
       }
     })

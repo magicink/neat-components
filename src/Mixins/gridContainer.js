@@ -4,7 +4,7 @@ const gridContainer: Function = (parent: string = '&'): Object => {
   return {
     [psuedoSelector]: {
       clear: 'both',
-      content: '',
+      content: '""',
       display: 'block'
     }
   }

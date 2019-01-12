@@ -1,12 +1,12 @@
 {
   "name": "neat-components",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "main": "bundle.js",
   "license": "MIT",
   "repository": "magicink/neat-components",
   "scripts": {
-    "build": "rrollup --config rollup.config.js",
+    "build": "rollup --config rollup.config.js",
     "lint": "standard --parser babel-eslint \"./src/**.js\"",
     "storybook": "start-storybook -c .storybook -p 9001",
     "storybook:build": "rimraf ./docs && build-storybook -c .storybook -o docs",
