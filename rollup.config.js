@@ -16,13 +16,14 @@ export default [{
     babel({
       babelrc: false,
       exclude: 'node_modules/**',
-      plugins: [
-        '@babel/plugin-syntax-dynamic-import',
-        '@babel/plugin-transform-runtime'
-      ],
       presets: [
         '@babel/preset-flow',
         '@babel/preset-react'
+      ],
+      plugins: [
+        '@babel/plugin-syntax-dynamic-import',
+        '@babel/plugin-transform-runtime',
+        '@babel/plugin-proposal-export-default-from'
       ],
       runtimeHelpers: true
     }),
