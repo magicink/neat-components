@@ -1,20 +1,24 @@
-// flow-typed signature: 33f15a530d297ab53803f25e77b3e4b8
-// flow-typed version: 56bf22e6ef/@storybook/react_v5.x.x/flow_>=v0.25.x <=v0.71.x
+// flow-typed signature: 5b90d1e64eca4ff52895dddc81069419
+// flow-typed version: 00c3a083ad/@storybook/react_v5.x.x/flow_>=v0.72.x
 
 type NodeModule = typeof module;
 
 declare module '@storybook/react' {
   declare type Context = { kind: string, story: string };
-  declare type Renderable = React$Element<*>;
+  declare type Renderable =
+    | string
+    | number
+    | React$Element<any>
+    | Iterable<?Renderable>;
   declare type RenderCallback = (
     context: Context
-  ) => Renderable | Array<Renderable>;
-  declare type RenderFunction = () => Renderable | Array<Renderable>;
+  ) => Renderable;
+  declare type RenderFunction = () => Renderable;
 
   declare type StoryDecorator = (
     story: RenderFunction,
     context: Context
-  ) => Renderable | null;
+  ) => Renderable;
 
   declare type DecoratorParameters = {
     [key: string]: any,
@@ -48,6 +52,7 @@ declare module '@storybook/react' {
   declare function configure(fn: () => void, module: NodeModule): void;
   declare function setAddon(addon: Object): void;
   declare function storiesOf(name: string, module: NodeModule): Story;
+  declare function storiesOf<T>(name: string, module: NodeModule): Story & T;
   declare function forceReRender(): void;
 
   declare function getStorybook(): Array<StoryBucket>;
