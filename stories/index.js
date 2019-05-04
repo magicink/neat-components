@@ -1,9 +1,14 @@
+import Neat, { gridColumn, gridContainer, gridMedia } from '../bundle'
+import styled, { ThemeProvider } from 'styled-components'
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-import styled, { ThemeProvider } from 'styled-components'
-import Neat, { gridColumn, gridContainer, gridMedia } from '../bundle'
 
 storiesOf('Neat Components', module)
+  .addParameters({
+    readme: {
+      sidebar: require('../README.md')
+    }
+  })
   .add('12 Column Grid', () => {
     let constants = () => {
       return `

@@ -2,7 +2,7 @@ import babel from 'rollup-plugin-babel'
 import flow from 'rollup-plugin-flow'
 import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
-import {terser} from 'rollup-plugin-terser'
+import { terser } from 'rollup-plugin-terser'
 
 export default [{
   external: ['react', 'styled-components'],
@@ -27,7 +27,7 @@ export default [{
       ],
       runtimeHelpers: true
     }),
-    flow({all: true}),
+    flow({ all: true }),
     resolve(),
     terser()
   ]

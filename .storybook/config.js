@@ -1,4 +1,7 @@
-import { configure } from '@storybook/react'
+import { addDecorator, configure } from '@storybook/react'
+import { addReadme } from 'storybook-readme'
+
+addDecorator(addReadme)
 
 const loadStories = () => {
   require('../stories')
