@@ -22,8 +22,15 @@ export default [{
       ],
       plugins: [
         '@babel/plugin-syntax-dynamic-import',
-        '@babel/plugin-transform-runtime',
-        '@babel/plugin-proposal-export-default-from'
+        '@babel/plugin-proposal-export-default-from',
+        '@babel/plugin-proposal-object-rest-spread',
+        '@babel/plugin-transform-arrow-functions',
+        '@babel/plugin-transform-spread',
+        '@babel/plugin-transform-destructuring',
+        '@babel/plugin-transform-parameters',
+        '@babel/plugin-transform-block-scoping',
+        '@babel/plugin-transform-computed-properties',
+        '@babel/plugin-transform-template-literals'
       ],
       runtimeHelpers: true
     }),
