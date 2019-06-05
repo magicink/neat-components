@@ -1,6 +1,6 @@
 {
   "name": "neat-components",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "keywords": [
     "components",
@@ -10,7 +10,10 @@
     "styled-components",
     "thoughtbot"
   ],
-  "repository": "magicink/neat-components",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magicink/neat-components"
+  },
   "license": "MIT",
   "author": {
     "name": "Brandon Tom",
@@ -18,10 +21,10 @@
   },
   "main": "bundle.js",
   "scripts": {
-    "build": "rollup --config rollup.config.js && npm run storybook:build",
+    "build": "rollup --config rollup.config.js",
     "lint": "standard --parser babel-eslint \"./src/**.js\"",
     "patch": "npm version patch --no-git-tag-version",
-    "prepare": "npm run storybook:build && npm run build",
+    "prepare": "npx rimraf ./docs && npm run build",
     "storybook": "start-storybook -c .storybook -p 9001",
     "storybook:build": "npx rimraf ./docs && build-storybook -c .storybook -o docs",
     "test": "jest --coverage",
@@ -57,7 +60,7 @@
     "@babel/register": "^7.4.4",
     "@babel/runtime": "^7.4.4",
     "@storybook/addon-storysource": "^5.0.11",
-    "@storybook/cli": "^5.0.11",
+    "@storybook/cli": "^5.1.1",
     "@storybook/react": "^5.0.11",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.8.0",

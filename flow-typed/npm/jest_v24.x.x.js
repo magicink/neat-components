@@ -1,5 +1,5 @@
-// flow-typed signature: bc0540c4f52a8393324018570db92725
-// flow-typed version: 8b0a1f6a01/jest_v24.x.x/flow_>=v0.39.x
+// flow-typed signature: 8b23fe546b7c8f968031d5cd94ddc17f
+// flow-typed version: cefb07e7f4/jest_v24.x.x/flow_>=v0.39.x
 
 type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
   (...args: TArguments): TReturn,
@@ -215,6 +215,7 @@ type EnzymeMatchersType = {
 // DOM testing library extensions https://github.com/kentcdodds/dom-testing-library#custom-jest-matchers
 type DomTestingLibraryType = {
   toBeDisabled(): void,
+  toBeEnabled(): void,
   toBeEmpty(): void,
   toBeInTheDocument(): void,
   toBeVisible(): void,
