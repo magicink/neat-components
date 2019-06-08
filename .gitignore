@@ -1,4 +1,3 @@
-node_modules/
-coverage/
 .idea/
-demos/dist/
+coverage/
+node_modules/

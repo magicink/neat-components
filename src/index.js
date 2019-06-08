@@ -1,20 +1,10 @@
 import Neat from './Theme/Neat'
-import gridCollapse from './Mixins/gridCollapse'
-import gridColumn from './Mixins/gridColumn'
-import gridContainer from './Mixins/gridContainer'
-import gridMedia from './Mixins/gridMedia'
-import gridPush from './Mixins/gridPush'
-import gridShift from './Mixins/gridShift'
-import gridVisual from './Mixins/gridVisual'
+export gridCollapse from './Mixins/gridCollapse'
+export gridColumn from './Mixins/gridColumn'
+export gridContainer from './Mixins/gridContainer'
+export gridMedia from './Mixins/gridMedia'
+export gridPush from './Mixins/gridPush'
+export gridShift from './Mixins/gridShift'
+export gridVisual from './Mixins/gridVisual'
 
 export default Neat
-
-export {
-  gridCollapse,
-  gridColumn,
-  gridContainer,
-  gridMedia,
-  gridPush,
-  gridShift,
-  gridVisual
-}

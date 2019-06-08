@@ -1,4 +1,5 @@
 import Neat from './Neat'
+import { Directions } from './NeatTheme'
 
 describe('Neat', () => {
   describe('constructor', () => {
@@ -8,7 +9,7 @@ describe('Neat', () => {
       }
       expect(result.color).toBe(null)
       expect(result.columns).toBe(12)
-      expect(result.direction).toBe('ltr')
+      expect(result.direction).toBe(Directions.LTR)
       expect(result.gutter).toBe('20px')
       expect(result.media).toBe(null)
     })
@@ -22,25 +23,25 @@ describe('Neat', () => {
       }
       expect(result.color).toBe('blue')
       expect(result.columns).toBe(12)
-      expect(result.direction).toBe('ltr')
+      expect(result.direction).toBe(Directions.LTR)
       expect(result.gutter).toBe('10px')
       expect(result.media).toBe(1000)
     })
     it('should handle a direction of "ltr" correctly', () => {
       const result = {
         ...(new Neat({
-          direction: 'ltr'
+          direction: Directions.LTR
         }))
       }
-      expect(result.direction).toBe('ltr')
+      expect(result.direction).toBe(Directions.LTR)
     })
     it('should handle a direction of "rtl" correctly', () => {
       const result = {
         ...(new Neat({
-          direction: 'rtl'
+          direction: Directions.RTL
         }))
       }
-      expect(result.direction).toBe('rtl')
+      expect(result.direction).toBe(Directions.RTL)
     })
     it('should handle a number direction correctly', () => {
       const result = {
@@ -48,7 +49,7 @@ describe('Neat', () => {
           direction: 1
         }))
       }
-      expect(result.direction).toBe('ltr')
+      expect(result.direction).toBe(Directions.LTR)
     })
   })
 })
