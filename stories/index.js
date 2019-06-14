@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react'
 storiesOf('Neat Components', module)
   .addParameters({
     readme: {
-      sidebar: require('../README.md')
+      sidebar: require('../README.md').default
     }
   })
   .add('12 Column Grid', () => {
