@@ -1,6 +1,6 @@
 {
   "name": "neat-components",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "keywords": [
     "components",
@@ -19,6 +19,10 @@
     "name": "Brandon Tom",
     "email": "brandon@brandontom.com"
   },
+  "files": [
+    "bundle.js",
+    "README.md"
+  ],
   "main": "bundle.js",
   "scripts": {
     "build": "rollup --config rollup.config.js",
@@ -59,7 +63,7 @@
     "@babel/register": "^7.4.4",
     "@babel/runtime": "^7.4.4",
     "@storybook/addon-storysource": "^5.1.8",
-    "@storybook/cli": "^5.1.8",
+    "@storybook/cli": "^5.1.9",
     "@storybook/react": "^5.1.8",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.8.0",
