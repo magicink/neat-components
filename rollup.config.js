@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel'
+import babel from '@rollup/plugin-babel'
 import flow from 'rollup-plugin-flow'
 import path from 'path'
 import resolve from 'rollup-plugin-node-resolve'
@@ -30,9 +30,11 @@ export default [{
         '@babel/plugin-transform-parameters',
         '@babel/plugin-transform-block-scoping',
         '@babel/plugin-transform-computed-properties',
-        '@babel/plugin-transform-template-literals'
+        '@babel/plugin-transform-template-literals',
+        '@babel/plugin-proposal-nullish-coalescing-operator',
+        '@babel/plugin-proposal-optional-chaining'
       ],
-      runtimeHelpers: true
+      babelHelpers: 'bundled'
     }),
     flow({ all: true }),
     resolve(),
