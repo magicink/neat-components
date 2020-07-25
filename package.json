@@ -19,11 +19,11 @@
     "name": "Brandon Tom",
     "email": "brandon@brandontom.com"
   },
+  "main": "bundle.js",
   "files": [
     "bundle.js",
     "README.md"
   ],
-  "main": "bundle.js",
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "clean": "npx rimraf bundle.js && npx rimraf ./docs",
@@ -34,6 +34,11 @@
     "storybook:build": "npm run clean && npm run build && build-storybook -c .storybook -o docs",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run clean && npm run storybook:build && npm test"
+    }
   },
   "jest": {
     "roots": [
@@ -111,10 +116,5 @@
       "test",
       "$Values"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run clean && npm run storybook:build && npm test"
-    }
   }
 }
