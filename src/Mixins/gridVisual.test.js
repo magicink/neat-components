@@ -9,7 +9,7 @@ describe('gridVisual()', () => {
     expect(result.hasOwnProperty('background-image')).toBe(true)
     expect(result['background-image'].replace(/\s+/g, ' ').trim()).toEqual(`
       repeating-linear-gradient(
-        to right, transparent, transparent, ${color} 20px,
+        to right, transparent, transparent 20px, ${color} 20px,
         ${color} calc(${columnWidth(Neat(), 1)} + 20px)
       )`.replace(/\s+/g, ' ').trim()
     )
@@ -29,7 +29,7 @@ describe('gridVisual()', () => {
     expect(result.hasOwnProperty('background-image')).toBe(true)
     expect(result['background-image'].replace(/\s+/g, ' ').trim()).toEqual(`
       repeating-linear-gradient(
-        to right, transparent, transparent, 20px,
+        to right, transparent, transparent 20px, 20px,
         calc(${columnWidth(Neat(), 1)} + 20px)
       )`.replace(/\s+/g, ' ').trim()
     )
