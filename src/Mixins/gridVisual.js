@@ -13,7 +13,7 @@ let gridVisual: Function = (theme: typeof NeatTheme): Styles => {
   return {
     'background-image': `
       repeating-linear-gradient(
-        to right, transparent, transparent,
+        to right, transparent, transparent ${gutter},
         ${color} ${gutter},
         ${color} calc(${columnWidth(theme, 1)} + ${gutter})
       )
