@@ -16,6 +16,8 @@ describe('gridPush()', () => {
   it('should handle a push greater than 0', () => {
     let result = gridPush(Neat(), 2)
     let calculatedWidth = columnWidth(Neat(), 2)
-    expect(result['margin-left'].trim()).toEqual(`calc(${calculatedWidth} + 40px)`)
+    expect(result['margin-left'].trim()).toEqual(
+      `calc(${calculatedWidth} + 40px)`
+    )
   })
 })

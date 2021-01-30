@@ -1,4 +1,12 @@
-import Neat, { gridCollapse, gridColumn, gridContainer, gridMedia, gridPush, gridShift, gridVisual } from './'
+import Neat, {
+  gridCollapse,
+  gridColumn,
+  gridContainer,
+  gridMedia,
+  gridPush,
+  gridShift,
+  gridVisual
+} from './'
 
 describe('API', () => {
   it('should export the API correctly', () => {

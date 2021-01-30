@@ -8,7 +8,10 @@ type Styles = {
   position?: string
 }
 
-const gridShift: Function = (theme: typeof NeatTheme, shift: number = 0): Styles => {
+const gridShift: Function = (
+  theme: typeof NeatTheme,
+  shift: number = 0
+): Styles => {
   const { direction, gutter } = theme
   if (!direction || gutter === undefined) return {}
   if (shift > 0) {

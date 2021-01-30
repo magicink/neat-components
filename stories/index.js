@@ -80,10 +80,12 @@ storiesOf('Neat Components', module)
       media: 'only screen and (min-width: 601px)'
     })
 
-    const desktopMediaQuery = gridMedia(desktopGrid, [{
-      ...gridColumn(desktopGrid, 1),
-      'background-color': 'red'
-    }])
+    const desktopMediaQuery = gridMedia(desktopGrid, [
+      {
+        ...gridColumn(desktopGrid, 1),
+        'background-color': 'red'
+      }
+    ])
 
     const Column = styled.div`
       height: 50px;

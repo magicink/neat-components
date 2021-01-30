@@ -1,6 +1,6 @@
 {
   "name": "neat-components",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "Combining Thoughtbot's Neat Grid system with Styled Components",
   "keywords": [
     "components",
@@ -27,6 +27,7 @@
   "scripts": {
     "build": "rollup --config rollup.config.js",
     "clean": "npx rimraf bundle.js && npx rimraf ./docs",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
     "lint": "standard --parser babel-eslint \"./src/**.js\"",
     "patch": "npm version patch --no-git-tag-version",
     "prepare": "npx rimraf ./docs && npm run build",
@@ -37,8 +38,19 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run clean && npm run storybook:build && npm test"
+      "pre-commit": "npm run format && npm run clean && npm run storybook:build && npm test"
     }
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "quoteProps": "as-needed",
+    "jsxBracketSameLine": false,
+    "jsxSingleQuote": true,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none"
   },
   "jest": {
     "roots": [
@@ -48,7 +60,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
+    "@babel/cli": "^7.12.10",
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-decorators": "^7.10.5",
     "@babel/plugin-proposal-export-default-from": "^7.10.4",
@@ -81,11 +93,12 @@
     "babel-loader": "^8.0.6",
     "eslint-plugin-flowtype": "^3.10.3",
     "flow-bin": "^0.100.0",
-    "husky": "^4.2.5",
+    "husky": "^4.3.8",
     "jest": "^26.1.0",
     "jest-environment-jsdom": "^26.1.0",
     "jest-environment-jsdom-global": "^2.0.4",
     "marked": "^0.6.2",
+    "prettier": "^2.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "regenerator-runtime": "^0.13.2",

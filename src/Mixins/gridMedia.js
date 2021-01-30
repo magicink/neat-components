@@ -3,7 +3,10 @@ import { parseMedia } from '../Functions'
 import { css } from 'styled-components'
 import { NeatTheme } from '../Theme/NeatTheme'
 
-let gridMedia: Function = (theme: typeof NeatTheme, ...args: Array<any>): Array<any> => {
+let gridMedia: Function = (
+  theme: typeof NeatTheme,
+  ...args: Array<any>
+): Array<any> => {
   const { media } = theme
   if (!media) return []
   return css`

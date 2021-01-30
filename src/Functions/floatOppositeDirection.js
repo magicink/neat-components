@@ -1,5 +1,7 @@
 // @flow
-const floatOppositeDirection: Function = (direction: string = 'ltr'): ?string => {
+const floatOppositeDirection: Function = (
+  direction: string = 'ltr'
+): ?string => {
   if (direction === 'ltr') {
     return 'right'
   }

@@ -1,5 +1,5 @@
 // @flow
-export const Directions: {[key: string]: string} = {
+export const Directions: { [key: string]: string } = {
   LTR: 'LTR',
   RTL: 'RTL'
 }
