@@ -84,7 +84,7 @@
     "@babel/runtime": "^7.10.5",
     "@rollup/plugin-babel": "^5.1.0",
     "@storybook/addon-storysource": "^5.3.19",
-    "@storybook/cli": "^5.3.19",
+    "@storybook/cli": "^7.0.26",
     "@storybook/react": "^7.0.6",
     "@testing-library/react": "^10.4.7",
     "@testing-library/react-hooks": "^3.4.1",
