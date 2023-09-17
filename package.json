@@ -93,7 +93,7 @@
     "babel-loader": "^8.0.6",
     "eslint-plugin-flowtype": "^3.10.3",
     "flow-bin": "^0.100.0",
-    "husky": "^4.3.8",
+    "husky": "^8.0.3",
     "jest": "^26.1.0",
     "jest-environment-jsdom": "^26.1.0",
     "jest-environment-jsdom-global": "^2.0.4",
